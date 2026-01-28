@@ -1,0 +1,119 @@
+<?php
+declare(strict_types=1);
+use function App\{pdo, e, require_user};
+require __DIR__ . '/../inc/db.php';
+require __DIR__ . '/../inc/auth.php';
+require __DIR__ . '/../inc/csrf.php';
+require __DIR__ . '/../inc/helpers.php';
+require __DIR__ . '/../inc/icons.php';
+
+$me = \App\require_user();
+$csrf = \App\csrf_token();
+$links = pdo()->prepare("SELECT id, title, url, color_hex, icon_slug, position, is_active FROM links WHERE user_id=? ORDER BY position ASC, id ASC");
+$links->execute([$me['id']]);
+$links = $links->fetchAll();
+$icons = \App\icon_list();
+?><!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Links</title><link rel="stylesheet" href="/assets/css/styles.css"></head>
+<body class="theme-light"><main class="container">
+  <header class="admin-header">
+    <h1>Links</h1>
+    <nav>
+      <a href="/admin/">Dashboard</a>
+      <a href="/admin/logout.php" class="danger">Logout</a>
+    </nav>
+  </header>
+  <section class="card">
+    <h2>Add link</h2>
+    <form id="addForm">
+      <input type="hidden" name="_token" value="<?= e($csrf) ?>">
+      <div class="grid">
+        <label>Title<br><input type="text" name="title" required maxlength="80"></label>
+        <label>URL<br><input type="url" name="url" placeholder="https://..." required></label>
+      </div>
+      <div class="grid">
+        <label>Color<br><input type="color" name="color_hex" value="#111827"></label>
+        <label>Icon<br>
+          <select name="icon_slug">
+            <?php foreach ($icons as $slug => $path): ?>
+              <option value="<?= e($slug) ?>"><?= e($slug) ?></option>
+            <?php endforeach; ?>
+          </select>
+        </label>
+      </div>
+      <button type="submit">Add</button>
+    </form>
+  </section>
+  <section class="card">
+    <h2>Your links</h2>
+    <ul id="linkList" class="link-list" data-csrf="<?= e($csrf) ?>">
+      <?php foreach ($links as $l): ?>
+        <li class="link-item" data-id="<?= (int)$l['id'] ?>">
+          <span class="drag">⋮⋮</span>
+          <input class="title" type="text" value="<?= e($l['title']) ?>" maxlength="80">
+          <input class="url" type="url" value="<?= e($l['url']) ?>">
+          <input class="color" type="color" value="<?= e($l['color_hex']) ?>">
+          <select class="icon">
+            <?php foreach ($icons as $slug => $path): ?>
+              <option value="<?= e($slug) ?>" <?= $slug === ($l['icon_slug'] ?? 'link') ? 'selected' : '' ?>><?= e($slug) ?></option>
+            <?php endforeach; ?>
+          </select>
+          <button class="save">Save</button>
+          <button class="delete danger">Delete</button>
+        </li>
+      <?php endforeach; ?>
+    </ul>
+  </section></main>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script>
+const list = document.getElementById('linkList');
+const csrf = list.dataset.csrf;
+new Sortable(list, {
+  handle: '.drag',
+  animation: 150,
+  onEnd: async function () {
+    const ids = Array.from(list.querySelectorAll('.link-item')).map((li, idx) => ({id: li.dataset.id, position: idx}));
+    await fetch('/admin/api/reorder_links.php', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'X-CSRF-Token': csrf},
+      body: JSON.stringify({items: ids})
+    });
+  }
+});
+document.getElementById('addForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  fd.append('action', 'create');
+  const res = await fetch('/admin/api/link_crud.php', { method: 'POST', body: fd });
+  const json = await res.json();
+  if (json && json.id) location.reload();
+  else alert(json.error || 'Failed to add link');
+});
+list.addEventListener('click', async (e) => {
+  const li = e.target.closest('.link-item');
+  if (!li) return;
+  if (e.target.classList.contains('save')) {
+    const fd = new FormData();
+    fd.append('_token', csrf);
+    fd.append('action', 'update');
+    fd.append('id', li.dataset.id);
+    fd.append('title', li.querySelector('.title').value);
+    fd.append('url', li.querySelector('.url').value);
+    fd.append('color_hex', li.querySelector('.color').value);
+    fd.append('icon_slug', li.querySelector('.icon').value);
+    const res = await fetch('/admin/api/link_crud.php', {method: 'POST', body: fd});
+    const json = await res.json();
+    if (!json.ok) alert(json.error || 'Update failed');
+  } else if (e.target.classList.contains('delete')) {
+    if (!confirm('Delete this link?')) return;
+    const fd = new FormData();
+    fd.append('_token', csrf);
+    fd.append('action', 'delete');
+    fd.append('id', li.dataset.id);
+    const res = await fetch('/admin/api/link_crud.php', {method: 'POST', body: fd});
+    const json = await res.json();
+    if (json.ok) li.remove();
+    else alert(json.error || 'Delete failed');
+  }
+});
+</script></body></html>

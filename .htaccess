@@ -1,0 +1,29 @@
+# Enable rewriting
+RewriteEngine On
+# If the app lives in a subdirectory (e.g. /link/), set this to that path with no trailing slash, e.g. RewriteBase /link
+RewriteBase /
+
+# Security: block direct access to sensitive folders
+RewriteRule ^inc/ - [F,L]
+RewriteRule ^config/ - [F,L]
+RewriteRule ^storage/ - [F,L]
+
+# Security headers (may require mod_headers on host)
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "no-referrer-when-downgrade"
+</IfModule>
+
+# Pretty URL for public profiles: /@username (and %40username when @ is encoded)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^@([A-Za-z0-9_]{3,32})$ index.php?u=$1 [L,QSA]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^%40([A-Za-z0-9_]{3,32})$ index.php?u=$1 [L,QSA,B]
+
+# (Optional) HTTPS redirect for production behind proxy:
+# RewriteCond %{HTTP:X-Forwarded-Proto} !https
+# RewriteCond %{HTTPS} !=on
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]

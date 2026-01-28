@@ -1,0 +1,21 @@
+
+<svg width="512" height="512" viewBox="0 0 512 512"
+     xmlns="http://www.w3.org/2000/svg" fill="black">
+
+  <!-- Top full-width bar -->
+  <rect x="0" y="0" width="512" height="60"/>
+
+  <!-- Middle full-width bar -->
+  <rect x="0" y="120" width="512" height="60"/>
+
+  <!-- Lower banner / ribbon shape -->
+  <!-- This is a polygon with bottom-center point -->
+  <polygon points="
+      0,240
+      512,240
+      512,512
+      256,380
+      0,512
+  "/>
+
+</svg>

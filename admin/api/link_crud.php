@@ -1,0 +1,55 @@
+<?php
+declare(strict_types=1);
+use function App\{pdo, require_user, json_response, sanitize_url, is_valid_hex_color};
+require __DIR__ . '/../../inc/db.php';
+require __DIR__ . '/../../inc/auth.php';
+require __DIR__ . '/../../inc/csrf.php';
+require __DIR__ . '/../../inc/helpers.php';
+require __DIR__ . '/../../inc/icons.php';
+
+$me = \App\require_user();
+\App\csrf_verify();
+
+$action = $_POST['action'] ?? '';
+if ($action === 'create') {
+    $title = trim((string)($_POST['title'] ?? ''));
+    $url   = sanitize_url((string)($_POST['url'] ?? ''));
+    $color = (string)($_POST['color_hex'] ?? '#111827');
+    $icon  = (string)($_POST['icon_slug'] ?? 'link');
+    if ($title === '' || !$url || !is_valid_hex_color($color)) {
+        json_response(['error'=>'Invalid input'], 422);
+    }
+    $icons = \App\icon_list();
+    if (!isset($icons[$icon])) $icon = 'link';
+    // determine next position
+    $pos = (int)pdo()->query("SELECT COALESCE(MAX(position),-1)+1 AS p FROM links WHERE user_id=".(int)$me['id'])->fetch()['p'];
+    $ins = pdo()->prepare("INSERT INTO links (user_id, title, url, color_hex, icon_slug, position) VALUES (?,?,?,?,?,?)");
+    $ins->execute([$me['id'], $title, $url, $color, $icon, $pos]);
+    $id = (int)pdo()->lastInsertId();
+    json_response(['id'=>$id, 'position'=>$pos]);
+} elseif ($action === 'update') {
+    $id    = (int)($_POST['id'] ?? 0);
+    $title = trim((string)($_POST['title'] ?? ''));
+    $url   = sanitize_url((string)($_POST['url'] ?? ''));
+    $color = (string)($_POST['color_hex'] ?? '#111827');
+    $icon  = (string)($_POST['icon_slug'] ?? 'link');
+    if ($id <= 0 || $title === '' || !$url || !is_valid_hex_color($color)) {
+        json_response(['error'=>'Invalid input'], 422);
+    }
+    $own = pdo()->prepare("SELECT id FROM links WHERE id=? AND user_id=?");
+    $own->execute([$id, $me['id']]);
+    if (!$own->fetch()) json_response(['error'=>'Not found or no permission'], 404);
+    $icons = \App\icon_list();
+    if (!isset($icons[$icon])) $icon = 'link';
+    $up = pdo()->prepare("UPDATE links SET title=?, url=?, color_hex=?, icon_slug=?, updated_at=NOW() WHERE id=? AND user_id=?");
+    $up->execute([$title, $url, $color, $icon, $id, $me['id']]);
+    json_response(['ok'=>true]);
+} elseif ($action === 'delete') {
+    $id = (int)($_POST['id'] ?? 0);
+    if ($id <= 0) json_response(['error'=>'Invalid id'], 422);
+    $own = pdo()->prepare("DELETE FROM links WHERE id=? AND user_id=?");
+    $own->execute([$id, $me['id']]);
+    json_response(['ok'=>true]);
+} else {
+    json_response(['error'=>'Unknown action'], 400);
+}
