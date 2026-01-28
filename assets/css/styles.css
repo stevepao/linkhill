@@ -64,3 +64,14 @@ button.danger { background: #b91c1c; }
 }
 .link-item .drag { cursor: grab; user-select: none; }
 .link-item .delete { background: #b91c1c; color: #fff; }
+.tabs { display: flex; gap: 0; margin: 16px 0; border-bottom: 1px solid #d1d5db; }
+.tabs .tab { padding: 10px 16px; text-decoration: none; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs .tab:hover { color: var(--fg); }
+.tabs .tab.active { color: var(--fg); font-weight: 600; border-bottom-color: var(--focus); }
+.muted { color: var(--muted); font-size: 0.9rem; }
+.passkey-add { margin-top: 8px; }
+.passkey-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed #ddd; }
+.passkey-item .cred-id { font-family: monospace; font-size: 0.85rem; color: var(--muted); }
+.passkey-item .actions { display: flex; gap: 8px; }
+.passkey-item .actions button { padding: 6px 10px; font-size: 0.9rem; }
+.passkey-item .actions button.danger { background: #b91c1c; }

@@ -20,7 +20,7 @@ if ($isAdmin) {
     <nav>
       <a href="/admin/profile.php">Profile</a>
       <a href="/admin/links.php">Links</a>
-      <a href="/admin/mfa.php">MFA</a>
+      <a href="/admin/security/">Security</a>
       <?php if ($isAdmin): ?><a href="/admin/users.php">Users</a><?php endif; ?>
       <a class="danger" href="/admin/logout.php">Logout</a>
     </nav>

@@ -5,6 +5,7 @@ namespace App;
 use App\Totp;
 
 require_once __DIR__ . '/totp.php';
+require_once __DIR__ . '/password_reset.php';
 
 function session_boot(): void {
     static $booted = false;
@@ -35,7 +36,7 @@ function session_boot(): void {
 /** @return 'ok'|'mfa'|'fail' */
 function login(string $email, string $password): string {
     session_boot();
-    $stmt = pdo()->prepare("SELECT id,email,username,display_name,password_hash,role,mfa_enabled FROM users WHERE email = ?");
+    $stmt = pdo()->prepare("SELECT id,email,username,display_name,password_hash,role,mfa_enabled,user_session_version FROM users WHERE email = ?");
     $stmt->execute([$email]);
     $u = $stmt->fetch();
     if (!$u || !password_verify($password, $u['password_hash'])) return 'fail';
@@ -43,30 +44,35 @@ function login(string $email, string $password): string {
         $_SESSION['pending_mfa_user_id'] = (int)$u['id'];
         return 'mfa';
     }
-    $_SESSION['user'] = [
-        'id'       => (int)$u['id'],
-        'email'    => $u['email'],
-        'username' => $u['username'],
-        'role'     => $u['role'],
-        'name'     => $u['display_name'],
-    ];
+    finish_login((int)$u['id'], $u['email'], $u['username'], $u['role'], $u['display_name'], (int)($u['user_session_version'] ?? 0));
     return 'ok';
+}
+
+/** Set session and regenerate ID after successful auth (password or passkey). */
+function finish_login(int $id, string $email, string $username, string $role, string $name, int $sessionVersion = 0): void {
+    session_boot();
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        session_regenerate_id(true);
+    }
+    $_SESSION['user'] = [
+        'id'       => $id,
+        'email'    => $email,
+        'username' => $username,
+        'role'     => $role,
+        'name'     => $name,
+        'session_version' => $sessionVersion,
+    ];
+    pdo()->prepare("UPDATE users SET last_login_at = NOW() WHERE id = ?")->execute([$id]);
 }
 
 function verify_totp_and_finish(int $userId, string $code): bool {
     session_boot();
-    $stmt = pdo()->prepare("SELECT id,email,username,display_name,role,mfa_secret FROM users WHERE id = ?");
+    $stmt = pdo()->prepare("SELECT id,email,username,display_name,role,mfa_secret,user_session_version FROM users WHERE id = ?");
     $stmt->execute([$userId]);
     $u = $stmt->fetch();
     if (!$u || empty($u['mfa_secret'])) return false;
     if (!Totp\verify($u['mfa_secret'], $code, 1)) return false;
-    $_SESSION['user'] = [
-        'id'       => (int)$u['id'],
-        'email'    => $u['email'],
-        'username' => $u['username'],
-        'role'     => $u['role'],
-        'name'     => $u['display_name'],
-    ];
+    finish_login((int)$u['id'], $u['email'], $u['username'], $u['role'], $u['display_name'], (int)($u['user_session_version'] ?? 0));
     unset($_SESSION['pending_mfa_user_id']);
     return true;
 }
@@ -82,7 +88,15 @@ function require_user(): array {
         header('Location: /admin/login.php');
         exit;
     }
-    return $_SESSION['user'];
+    $u = $_SESSION['user'];
+    $dbVersion = get_user_session_version((int)$u['id']);
+    $sessionVersion = (int)($u['session_version'] ?? 0);
+    if ($dbVersion > $sessionVersion) {
+        logout();
+        header('Location: /admin/login.php?expired=1');
+        exit;
+    }
+    return $u;
 }
 
 function require_admin(): array {

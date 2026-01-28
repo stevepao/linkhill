@@ -17,4 +17,28 @@ return [
   'cookie_samesite' => 'Lax',
   'password_cost'   => 12,
   'timezone'        => 'America/Los_Angeles',
+
+  // One-time web migration (run_migration.php?key=...). Set a secret, run once, then delete run_migration.php.
+  'migration_key'  => '',
+
+  // DEV_MODE: if true, password reset links are logged instead of emailed when SMTP not configured
+  'dev_mode'        => false,
+
+  // SMTP for password reset and notifications (leave empty to skip sending; in dev_mode links are logged)
+  'smtp' => [
+    'host'       => '',
+    'port'       => 587,
+    'secure'     => 'tls',       // 'tls' or 'ssl'
+    'user'       => '',
+    'pass'       => '',
+    'from'       => 'noreply@example.com',
+    'from_name'  => 'LinkHub',
+  ],
+
+  // WebAuthn / Passkeys
+  'webauthn' => [
+    'rp_id'   => '',   // Effective domain, e.g. 'example.com' or 'localhost' for dev
+    'rp_name' => 'LinkHub',
+    'origin'  => '',   // Full origin, e.g. 'https://example.com' or 'https://localhost:8443' for dev
+  ],
 ];
