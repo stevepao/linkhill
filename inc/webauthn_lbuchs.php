@@ -11,7 +11,8 @@ class WebAuthnLbuchs implements WebAuthnServiceInterface {
     private string $origin;
 
     public function __construct(string $rpName, string $rpId, string $origin, array $allowedAttestationFormats = ['none']) {
-        $autoload = dirname(__DIR__, 2) . '/vendor/autoload.php';
+        // This file lives in /inc, so project root is one level up.
+        $autoload = dirname(__DIR__) . '/vendor/autoload.php';
         if (!is_file($autoload)) {
             throw new \RuntimeException('Composer autoload not found. Run: composer install');
         }
