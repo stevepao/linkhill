@@ -6,7 +6,7 @@ require __DIR__ . '/../inc/helpers.php';
 require __DIR__ . '/../inc/csrf.php';
 require __DIR__ . '/../inc/mail.php';
 require __DIR__ . '/../inc/rate_limit.php';
-require __DIR__ . '/../inc/password_reset.php';
+require_once __DIR__ . '/../inc/password_reset.php';
 \App\session_boot();
 
 $msg = '';

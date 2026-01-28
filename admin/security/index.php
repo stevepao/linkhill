@@ -7,7 +7,7 @@ require __DIR__ . '/../../inc/csrf.php';
 require __DIR__ . '/../../inc/helpers.php';
 require __DIR__ . '/../../inc/webauthn.php';
 require_once __DIR__ . '/../../inc/totp.php';
-require __DIR__ . '/../../inc/password_reset.php';
+require_once __DIR__ . '/../../inc/password_reset.php';
 
 $me = \App\require_user();
 $msg = '';

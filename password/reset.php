@@ -5,7 +5,7 @@ require __DIR__ . '/../inc/db.php';
 require __DIR__ . '/../inc/auth.php';
 require __DIR__ . '/../inc/helpers.php';
 require __DIR__ . '/../inc/csrf.php';
-require __DIR__ . '/../inc/password_reset.php';
+require_once __DIR__ . '/../inc/password_reset.php';
 require __DIR__ . '/../inc/rate_limit.php';
 \App\session_boot();
 
