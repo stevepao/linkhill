@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+ob_start();
 use function App\{pdo, require_user, webauthn_service, rate_limit_check, rate_limit_identifier, json_response};
 require __DIR__ . '/../../inc/db.php';
 require __DIR__ . '/../../inc/auth.php';
@@ -9,6 +10,7 @@ require __DIR__ . '/../../inc/rate_limit.php';
 \App\session_boot();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    ob_end_clean();
     http_response_code(405);
     exit;
 }
@@ -49,13 +51,17 @@ try {
     $_SESSION['webauthn_register_challenge'] = $svc->getStoredChallenge();
     $json = json_encode($options, JSON_UNESCAPED_SLASHES);
     if ($json === false) {
+        ob_end_clean();
         json_response(['error' => 'Failed to encode options'], 500);
     }
+    ob_end_clean();
     header('Content-Type: application/json; charset=utf-8');
     echo $json;
 } catch (\RuntimeException $e) {
+    ob_end_clean();
     json_response(['error' => $e->getMessage()], 503);
 } catch (\Throwable $e) {
     error_log('WebAuthn register start: ' . $e->getMessage());
+    ob_end_clean();
     json_response(['error' => 'Server error'], 500);
 }

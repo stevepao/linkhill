@@ -29,6 +29,11 @@
     return input ? input.value : '';
   }
 
+  function getBasePath() {
+    var meta = document.querySelector('meta[name="app-base-path"]');
+    return (meta && meta.getAttribute('content')) ? meta.getAttribute('content') : '';
+  }
+
   function prepareCreationOptions(options) {
     if (!options || !options.publicKey) return options;
     var pk = options.publicKey;
@@ -68,18 +73,31 @@
 
   function fetchJson(url, opts) {
     opts = opts || {};
+    var basePath = getBasePath();
+    var fullUrl = (basePath ? basePath : '') + url;
     var headers = opts.headers || {};
     headers['Content-Type'] = headers['Content-Type'] || 'application/json';
     var token = getCsrfToken();
     if (token) headers['X-CSRF-Token'] = token;
-    return fetch(url, {
+    return fetch(fullUrl, {
       method: opts.method || 'GET',
       headers: headers,
       body: opts.body,
       credentials: 'same-origin'
     }).then(function (r) {
-      if (!r.ok) return r.json().then(function (j) { throw new Error(j.error || r.statusText); }).catch(function () { throw new Error(r.statusText); });
-      return r.json();
+      return r.text().then(function (text) {
+        var data;
+        try {
+          data = text ? JSON.parse(text) : {};
+        } catch (e) {
+          if (text && text.indexOf('<') !== -1) {
+            throw new Error('Server returned HTML instead of JSON. You may have been logged out, or the app is in a subdirectory and the base path may be wrong. Check the browser console for the request URL.');
+          }
+          throw new Error(r.statusText || 'Invalid response');
+        }
+        if (!r.ok) throw new Error((data && data.error) || r.statusText);
+        return data;
+      });
     });
   }
 

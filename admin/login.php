@@ -54,6 +54,7 @@ $pending = isset($_SESSION['pending_mfa_user_id']);
   </p>
   <?php endif; ?>
   <meta name="csrf-token" content="<?= e(\App\csrf_token()) ?>">
+  <meta name="app-base-path" content="<?= e(rtrim(parse_url(\App\base_url(), PHP_URL_PATH) ?: '', '/')) ?>">
   <script src="/assets/js/webauthn.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {

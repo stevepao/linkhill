@@ -171,6 +171,7 @@ $csrf = \App\csrf_token();
     <?php endif; ?>
   </section>
   <meta name="csrf-token" content="<?= e($csrf) ?>">
+  <meta name="app-base-path" content="<?= e(rtrim(parse_url(\App\base_url(), PHP_URL_PATH) ?: '', '/')) ?>">
   <script src="/assets/js/webauthn.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
