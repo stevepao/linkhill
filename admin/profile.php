@@ -59,6 +59,10 @@ $row = $stmt->fetch();
     <h1>Profile</h1>
     <nav>
       <a href="/admin/">Dashboard</a>
+      <a href="/admin/profile.php">Profile</a>
+      <a href="/admin/links.php">Links</a>
+      <a href="/admin/security/">Security</a>
+      <?php if (($me['role'] ?? '') === 'admin'): ?><a href="/admin/users.php">Users</a><?php endif; ?>
       <a href="/admin/logout.php" class="danger">Logout</a>
     </nav>
   </header>
