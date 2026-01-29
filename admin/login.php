@@ -15,7 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['email'], $_POST['password'])) {
         $res = \App\login($_POST['email'], $_POST['password']);
         if ($res === 'ok') {
-            header('Location: /admin/');
+            $u = \App\current_user();
+            header('Location: ' . (($u['role'] ?? '') === 'admin' ? '/admin/' : '/admin/profile.php'));
             exit;
         } elseif ($res === 'mfa') {
             // fall through to TOTP form
@@ -28,7 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (isset($_POST['totp_code'])) {
         $uid = $_SESSION['pending_mfa_user_id'] ?? 0;
         if ($uid && \App\verify_totp_and_finish((int)$uid, $_POST['totp_code'])) {
-            header('Location: /admin/');
+            $u = \App\current_user();
+            header('Location: ' . (($u['role'] ?? '') === 'admin' ? '/admin/' : '/admin/profile.php'));
             exit;
         } else {
             $err = 'Invalid code.';

@@ -7,6 +7,10 @@ require __DIR__ . '/../inc/helpers.php';
 
 $u = \App\require_user();
 $isAdmin = ($u['role'] === 'admin');
+if (!$isAdmin) {
+    header('Location: /admin/profile.php');
+    exit;
+}
 $counts = ['users'=>null,'links'=>null];
 if ($isAdmin) {
     $counts['users'] = (int)pdo()->query("SELECT COUNT(*) AS c FROM users")->fetch()['c'];

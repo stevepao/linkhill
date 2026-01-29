@@ -85,7 +85,8 @@ try {
         $row['display_name'] ?: $row['email'],
         (int)$row['user_session_version']
     );
-    json_response(['ok' => true, 'redirect' => '/admin/']);
+    $redirect = ($row['role'] ?? '') === 'admin' ? '/admin/' : '/admin/profile.php';
+    json_response(['ok' => true, 'redirect' => $redirect]);
 } catch (\RuntimeException $e) {
     json_response(['error' => $e->getMessage()], 503);
 } catch (\Throwable $e) {

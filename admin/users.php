@@ -57,7 +57,7 @@ $users = pdo()->query("SELECT id,email,username,display_name,role,mfa_enabled FR
   <header class="admin-header">
     <h1>Users</h1>
     <nav>
-      <a href="/admin/">Dashboard</a>
+      <?php if (($me['role'] ?? '') === 'admin'): ?><a href="/admin/">Dashboard</a><?php endif; ?>
       <a href="/admin/profile.php">Profile</a>
       <a href="/admin/links.php">Links</a>
       <a href="/admin/security/">Security</a>
