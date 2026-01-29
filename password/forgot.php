@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $success = false;
 ?><!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Forgot password · <?= e(config()['app_name']) ?></title><link rel="stylesheet" href="/assets/css/styles.css"></head>
-<body class="theme-light"><main class="container narrow">
+<body class="theme-light"><main class="container">
   <h1>Forgot password</h1>
   <?php if ($msg): ?><div class="alert alert-error"><?= e($msg) ?></div><?php endif; ?>
   <form method="post">

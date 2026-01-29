@@ -51,7 +51,7 @@ if ($token !== '' && $resetData === null && $_SERVER['REQUEST_METHOD'] !== 'POST
 $showForm = $resetData !== null && !$done;
 ?><!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Set new password · <?= e(config()['app_name']) ?></title><link rel="stylesheet" href="/assets/css/styles.css"></head>
-<body class="theme-light"><main class="container narrow">
+<body class="theme-light"><main class="container">
   <h1>Set new password</h1>
   <?php if ($err && !$showForm): ?>
     <div class="alert alert-error"><?= e($err) ?></div>

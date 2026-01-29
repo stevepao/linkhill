@@ -82,7 +82,7 @@ if (!empty($_SESSION['mfa_tmp_secret'])) {
 $csrf = \App\csrf_token();
 ?><!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Security</title><link rel="stylesheet" href="/assets/css/styles.css"></head>
-<body class="theme-light"><main class="container narrow">
+<body class="theme-light"><main class="container">
   <header class="admin-header">
     <h1>Security</h1>
     <nav>
