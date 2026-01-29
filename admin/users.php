@@ -58,6 +58,10 @@ $users = pdo()->query("SELECT id,email,username,display_name,role,mfa_enabled FR
     <h1>Users</h1>
     <nav>
       <a href="/admin/">Dashboard</a>
+      <a href="/admin/profile.php">Profile</a>
+      <a href="/admin/links.php">Links</a>
+      <a href="/admin/security/">Security</a>
+      <a href="/admin/users.php">Users</a>
       <a href="/admin/logout.php" class="danger">Logout</a>
     </nav>
   </header>
