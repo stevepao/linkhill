@@ -83,6 +83,8 @@ p { margin: 0; } p + p { margin-top: var(--s-4); }
 .muted { color: var(--muted); }
 
 .site-title { font-weight: 700; font-size: clamp(22px, 2.6vw, 28px); letter-spacing: -0.01em; margin: 0 0 var(--s-2); }
+/* Homepage: product name bigger and more prominent */
+.home-page .hero .site-title { font-size: clamp(32px, 5vw, 48px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: var(--s-3); }
 .site-subtitle { color: var(--muted); font-size: .95rem; margin: 0; line-height: 1.5; }
 
 /* Profile (public page header) */

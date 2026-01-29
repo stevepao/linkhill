@@ -111,8 +111,8 @@ $year = (int) date('Y');
   <meta name="twitter:description" content="<?= e($metaDesc) ?>">
   <link rel="stylesheet" href="/assets/css/paos.css">
 </head>
-<body>
-  <header class="container">
+<body class="theme-light home-page">
+  <header class="container hero">
     <div class="profile">
       <h1 class="site-title"><?= e($appName) ?></h1>
       <p class="site-subtitle">All your links, one simple page — free &amp; open.</p>
