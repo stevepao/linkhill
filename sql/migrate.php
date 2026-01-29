@@ -49,6 +49,7 @@ foreach (
         ['webauthn_user_handle', "ADD COLUMN webauthn_user_handle VARBINARY(32) NULL UNIQUE"],
         ['last_login_at', "ADD COLUMN last_login_at DATETIME NULL AFTER password_updated_at"],
         ['user_session_version', "ADD COLUMN user_session_version INT UNSIGNED NOT NULL DEFAULT 0 AFTER last_login_at"],
+        ['email_verified_at', "ADD COLUMN email_verified_at DATETIME NULL AFTER created_at"],
     ] as $col
 ) {
     if (!column_exists($pdo, 'users', $col[0])) {
@@ -129,6 +130,37 @@ if (!column_exists($pdo, 'links', 'description')) {
         $done[] = "links.description";
     } catch (Throwable $e) {
         $errors[] = "links.description: " . $e->getMessage();
+    }
+}
+
+// --- email_verifications table (signup verification; same token pattern as password_resets)
+if (!table_exists($pdo, 'email_verifications')) {
+    try {
+        $pdo->exec("
+            CREATE TABLE email_verifications (
+                id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                user_id INT UNSIGNED NOT NULL,
+                token_hash VARBINARY(64) NOT NULL,
+                expires_at DATETIME NOT NULL,
+                used_at DATETIME NULL,
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_user_expires (user_id, expires_at),
+                CONSTRAINT fk_ev_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ");
+        $done[] = "table email_verifications";
+    } catch (Throwable $e) {
+        $errors[] = "email_verifications: " . $e->getMessage();
+    }
+}
+
+// --- backfill email_verified_at for existing users (so they can still log in)
+if (column_exists($pdo, 'users', 'email_verified_at')) {
+    try {
+        $stmt = $pdo->exec("UPDATE users SET email_verified_at = created_at WHERE email_verified_at IS NULL");
+        if ($stmt > 0) $done[] = "backfill email_verified_at ({$stmt} users)";
+    } catch (Throwable $e) {
+        $errors[] = "backfill email_verified_at: " . $e->getMessage();
     }
 }
 

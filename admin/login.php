@@ -19,6 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } elseif ($res === 'mfa') {
             // fall through to TOTP form
+        } elseif ($res === 'unverified') {
+            $err = 'Please verify your email before signing in. Check your inbox for the verification link.';
         } else {
             $err = 'Invalid credentials.';
             sleep(1);
@@ -35,10 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 $pending = isset($_SESSION['pending_mfa_user_id']);
+$verified = isset($_GET['verified']) && $_GET['verified'] === '1';
 ?><!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Login · <?= e(config()['app_name']) ?></title><link rel="stylesheet" href="/assets/css/styles.css"></head>
 <body class="theme-light"><main class="container">
   <h1>Sign in</h1>
+  <?php if ($verified): ?><div class="alert">Your email is verified. You can sign in below.</div><?php endif; ?>
   <?php if ($err): ?><div class="alert alert-error"><?= e($err) ?></div><?php endif; ?>
   <?php if (!$pending): ?>
   <form method="post" id="login-form">
@@ -60,7 +64,7 @@ $pending = isset($_SESSION['pending_mfa_user_id']);
     document.addEventListener('DOMContentLoaded', function() {
       if (typeof window.WebAuthnHelper !== 'undefined' && window.WebAuthnHelper.supported && <?= $passkeys_available ? 'true' : 'false' ?>) {
         var btn = document.getElementById('passkey-btn');
-        if (btn) { btn.style.display = 'inline-block'; window.WebAuthnHelper.initLoginPage(btn, document.getElementById('login-email')); }
+        if (btn) { btn.style.display = 'inline-block'; window.WebAuthnHelper.initLoginPage(btn, document.getElementById('login-email')); if (window.location.search.indexOf('method=passkey') !== -1) btn.focus(); }
       }
     });
   </script>

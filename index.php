@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-use function App\{pdo, e, links_has_description, is_valid_hex_color, link_contrast_text, link_darken, link_muted_rgba};
+use function App\{pdo, e, config, base_url, links_has_description, is_valid_hex_color, link_contrast_text, link_darken, link_muted_rgba};
 require __DIR__ . '/inc/db.php';
 require __DIR__ . '/inc/helpers.php';
 
@@ -89,13 +89,73 @@ if ($u !== null) {
 </body></html><?php
     exit;
 }
+// Homepage: informational only; no auth UI
+$appName = config()['app_name'] ?? 'Hillwork';
+$canonical = rtrim(base_url(), '/');
+$metaDesc = 'Create a clean, customizable link‑in‑bio page—free and open. No paywalls. Own your data.';
+$year = (int) date('Y');
 ?><!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>LinkHub</title><link rel="stylesheet" href="/assets/css/paos.css"></head>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><?= e($appName) ?> — All your links, one simple page</title>
+  <meta name="description" content="<?= e($metaDesc) ?>">
+  <link rel="canonical" href="<?= e($canonical) ?>/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="<?= e($canonical) ?>/">
+  <meta property="og:title" content="<?= e($appName) ?> — All your links, one simple page">
+  <meta property="og:description" content="<?= e($metaDesc) ?>">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<?= e($appName) ?> — All your links, one simple page">
+  <meta name="twitter:description" content="<?= e($metaDesc) ?>">
+  <link rel="stylesheet" href="/assets/css/paos.css">
+</head>
 <body>
+  <header class="container">
+    <div class="profile">
+      <h1 class="site-title"><?= e($appName) ?></h1>
+      <p class="site-subtitle">All your links, one simple page — free &amp; open.</p>
+      <p class="site-subtitle">Create a clean, customizable link hub in minutes. No paywalls. Own your data.</p>
+    </div>
+  </header>
   <main class="container">
     <div class="stack">
-      <h1>LinkHub</h1>
-      <p class="muted">Create your profile at <code>/admin</code> and visit <code>/@username</code> to share your link‑in‑bio page.</p>
+      <nav class="cta-group" aria-label="Sign up and log in">
+        <a href="/signup" class="button" id="cta-signup">Create free account</a>
+        <a href="/login" class="button button--secondary" id="cta-login">Log in</a>
+        <a href="/login?method=passkey" class="link-tertiary" id="cta-passkey">Sign in with passkey</a>
+      </nav>
+      <section class="benefits" aria-labelledby="benefits-heading">
+        <h2 id="benefits-heading" class="sr-only">Benefits</h2>
+        <div class="benefit-cards">
+          <div class="card">
+            <h3>Free &amp; open</h3>
+            <p>No subscriptions. Open ethos. No vendor lock‑in.</p>
+          </div>
+          <div class="card">
+            <h3>Fast &amp; private</h3>
+            <p>Minimal tracking. Privacy‑respectful by default.</p>
+          </div>
+          <div class="card">
+            <h3>Customizable</h3>
+            <p>Your links, your branding, your control.</p>
+          </div>
+        </div>
+      </section>
+      <p class="muted callout">An open alternative to Linktree. Your page, your data.</p>
     </div>
   </main>
-</body></html>
+  <footer class="footer">
+    <div class="container">
+      <nav aria-label="Footer">
+        <a href="/about">About</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a href="/contact">Contact</a>
+      </nav>
+      <p class="footer-copy">© <?= $year ?> Hillwork</p>
+    </div>
+  </footer>
+</body>
+</html>

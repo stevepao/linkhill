@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-use function App\{pdo, finish_login, webauthn_service, rate_limit_check, rate_limit_identifier, json_response};
+use function App\{pdo, finish_login, webauthn_service, rate_limit_check, rate_limit_identifier, json_response, users_have_email_verified};
 require __DIR__ . '/../../inc/db.php';
 require __DIR__ . '/../../inc/auth.php';
 require __DIR__ . '/../../inc/csrf.php';
@@ -35,8 +35,10 @@ if ($credentialIdRaw === false) {
     json_response(['error' => 'Invalid credential id'], 400);
 }
 
+$cols = "w.id, w.user_id, w.public_key, w.sign_count, u.email, u.username, u.display_name, u.role, u.user_session_version";
+if (users_have_email_verified()) $cols .= ", u.email_verified_at";
 $stmt = pdo()->prepare("
-    SELECT w.id, w.user_id, w.public_key, w.sign_count, u.email, u.username, u.display_name, u.role, u.user_session_version
+    SELECT {$cols}
     FROM webauthn_credentials w
     INNER JOIN users u ON u.id = w.user_id
     WHERE w.credential_id = ?
@@ -45,6 +47,9 @@ $stmt->execute([$credentialIdRaw]);
 $row = $stmt->fetch();
 if (!$row) {
     json_response(['error' => 'Unknown credential'], 400);
+}
+if (users_have_email_verified() && empty($row['email_verified_at'])) {
+    json_response(['error' => 'Please verify your email before signing in.'], 403);
 }
 
 $clientDataJSON = base64_decode(str_replace(['-', '_'], ['+', '/'], $input['clientDataJSON']) . str_repeat('=', (4 - strlen($input['clientDataJSON']) % 4) % 4), true);

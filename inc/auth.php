@@ -33,13 +33,20 @@ function session_boot(): void {
     $booted = true;
 }
 
-/** @return 'ok'|'mfa'|'fail' */
+/** @return 'ok'|'mfa'|'fail'|'unverified' */
 function login(string $email, string $password): string {
     session_boot();
-    $stmt = pdo()->prepare("SELECT id,email,username,display_name,password_hash,role,mfa_enabled,user_session_version FROM users WHERE email = ?");
+    $cols = "id,email,username,display_name,password_hash,role,mfa_enabled,user_session_version";
+    if (\App\users_have_email_verified()) {
+        $cols .= ",email_verified_at";
+    }
+    $stmt = pdo()->prepare("SELECT {$cols} FROM users WHERE email = ?");
     $stmt->execute([$email]);
     $u = $stmt->fetch();
     if (!$u || !password_verify($password, $u['password_hash'])) return 'fail';
+    if (\App\users_have_email_verified() && empty($u['email_verified_at'])) {
+        return 'unverified';
+    }
     if ((int)$u['mfa_enabled'] === 1) {
         $_SESSION['pending_mfa_user_id'] = (int)$u['id'];
         return 'mfa';
@@ -85,7 +92,7 @@ function current_user(): ?array {
 function require_user(): array {
     session_boot();
     if (empty($_SESSION['user'])) {
-        header('Location: /admin/login.php');
+        header('Location: /login');
         exit;
     }
     $u = $_SESSION['user'];
@@ -93,7 +100,7 @@ function require_user(): array {
     $sessionVersion = (int)($u['session_version'] ?? 0);
     if ($dbVersion > $sessionVersion) {
         logout();
-        header('Location: /admin/login.php?expired=1');
+        header('Location: /login?expired=1');
         exit;
     }
     return $u;

@@ -69,6 +69,32 @@ function json_response(array $payload, int $code = 200): void {
     exit;
 }
 
+/** True if a table has a column (for migrations / optional columns). */
+function column_exists(string $table, string $column): bool {
+    $stmt = \App\pdo()->prepare(
+        "SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?"
+    );
+    $stmt->execute([$table, $column]);
+    return (bool) $stmt->fetch();
+}
+
+/** True if users table has email_verified_at (run migration to add it). */
+function users_have_email_verified(): bool {
+    static $has = null;
+    if ($has === null) {
+        $stmt = \App\pdo()->query(
+            "SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'email_verified_at'"
+        );
+        $has = (bool) $stmt->fetch();
+    }
+    return $has;
+}
+
+/** True if users table has webauthn_user_handle column. */
+function users_have_webauthn_handle(): bool {
+    return column_exists('users', 'webauthn_user_handle');
+}
+
 /** True if links table has a description column (run migration to add it). */
 function links_has_description(): bool {
     static $has = null;
