@@ -7,11 +7,11 @@ $appName = e(config()['app_name'] ?? 'Hillwork');
 $year = (int) date('Y');
 ?><!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Contact · <?= $appName ?></title><link rel="stylesheet" href="/assets/css/paos.css"></head>
-<body>
+<body class="theme-light">
   <main class="container">
     <div class="stack">
       <h1>Contact</h1>
-      <p>For support or feedback, please use the contact method provided by your host or administrator (e.g. Hillwork).</p>
+      <p>For support or feedback, contact <a href="/@spao">Stephen Pao</a>.</p>
       <p><a href="/">Home</a></p>
     </div>
   </main>

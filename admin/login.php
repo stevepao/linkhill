@@ -78,4 +78,5 @@ $verified = isset($_GET['verified']) && $_GET['verified'] === '1';
     <button type="submit">Verify</button>
   </form>
   <?php endif; ?>
+  <p style="margin-top:16px;"><a href="/">Home</a></p>
 </main></body></html>

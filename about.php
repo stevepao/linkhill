@@ -7,7 +7,7 @@ $appName = e(config()['app_name'] ?? 'Hillwork');
 $year = (int) date('Y');
 ?><!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>About · <?= $appName ?></title><link rel="stylesheet" href="/assets/css/paos.css"></head>
-<body>
+<body class="theme-light">
   <main class="container">
     <div class="stack">
       <h1>About</h1>

@@ -124,7 +124,6 @@ $year = (int) date('Y');
       <nav class="cta-group" aria-label="Sign up and log in">
         <a href="/signup" class="button" id="cta-signup">Create free account</a>
         <a href="/login" class="button button--secondary" id="cta-login">Log in</a>
-        <a href="/login?method=passkey" class="link-tertiary" id="cta-passkey">Sign in with passkey</a>
       </nav>
       <section class="benefits" aria-labelledby="benefits-heading">
         <h2 id="benefits-heading" class="sr-only">Benefits</h2>
@@ -154,7 +153,7 @@ $year = (int) date('Y');
         <a href="/terms">Terms</a>
         <a href="/contact">Contact</a>
       </nav>
-      <p class="footer-copy">© <?= $year ?> Hillwork</p>
+      <p class="footer-copy">© <?= $year ?> Hillwork, LLC</p>
     </div>
   </footer>
 </body>
