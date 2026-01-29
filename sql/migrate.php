@@ -122,6 +122,16 @@ if (!table_exists($pdo, 'webauthn_credentials')) {
     }
 }
 
+// --- links: add description (optional blurb for card-style display)
+if (!column_exists($pdo, 'links', 'description')) {
+    try {
+        $pdo->exec("ALTER TABLE links ADD COLUMN description TEXT NULL AFTER url");
+        $done[] = "links.description";
+    } catch (Throwable $e) {
+        $errors[] = "links.description: " . $e->getMessage();
+    }
+}
+
 // --- backfill webauthn_user_handle for users where NULL (only if column exists)
 if (column_exists($pdo, 'users', 'webauthn_user_handle')) {
 try {

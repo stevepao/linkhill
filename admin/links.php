@@ -9,7 +9,7 @@ require __DIR__ . '/../inc/icons.php';
 
 $me = \App\require_user();
 $csrf = \App\csrf_token();
-$links = pdo()->prepare("SELECT id, title, url, color_hex, icon_slug, position, is_active FROM links WHERE user_id=? ORDER BY position ASC, id ASC");
+$links = pdo()->prepare("SELECT id, title, url, description, color_hex, icon_slug, position, is_active FROM links WHERE user_id=? ORDER BY position ASC, id ASC");
 $links->execute([$me['id']]);
 $links = $links->fetchAll();
 $icons = \App\icon_list();
@@ -35,6 +35,7 @@ $icons = \App\icon_list();
         <label>Title<br><input type="text" name="title" required maxlength="80"></label>
         <label>URL<br><input type="url" name="url" placeholder="https://..." required></label>
       </div>
+      <label>Description (optional; if set, link shows as a card with blurb on your page)<br><input type="text" name="description" placeholder="Optional blurb" maxlength="500"></label>
       <div class="grid">
         <label>Color<br><input type="color" name="color_hex" value="#111827"></label>
         <label>Icon<br>
@@ -56,6 +57,7 @@ $icons = \App\icon_list();
           <span class="drag">⋮⋮</span>
           <input class="title" type="text" value="<?= e($l['title']) ?>" maxlength="80">
           <input class="url" type="url" value="<?= e($l['url']) ?>">
+          <input class="description" type="text" placeholder="Optional blurb (shows as card)" value="<?= e($l['description'] ?? '') ?>" maxlength="500">
           <input class="color" type="color" value="<?= e($l['color_hex']) ?>">
           <select class="icon">
             <?php foreach ($icons as $slug => $path): ?>
@@ -103,6 +105,7 @@ list.addEventListener('click', async (e) => {
     fd.append('id', li.dataset.id);
     fd.append('title', li.querySelector('.title').value);
     fd.append('url', li.querySelector('.url').value);
+    fd.append('description', li.querySelector('.description').value.trim());
     fd.append('color_hex', li.querySelector('.color').value);
     fd.append('icon_slug', li.querySelector('.icon').value);
     const res = await fetch('/admin/api/link_crud.php', {method: 'POST', body: fd});

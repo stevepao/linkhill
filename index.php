@@ -38,46 +38,59 @@ if ($u !== null) {
         echo "User not found";
         exit;
     }
-    $links = pdo()->prepare("SELECT id, title, url, color_hex, icon_slug FROM links WHERE user_id = ? AND is_active = 1 ORDER BY position ASC, id ASC");
+    $links = pdo()->prepare("SELECT id, title, url, description, color_hex, icon_slug FROM links WHERE user_id = ? AND is_active = 1 ORDER BY position ASC, id ASC");
     $links->execute([$user['id']]);
     $links = $links->fetchAll();
     include __DIR__ . '/inc/icons.php';
-    $themeClass = 'theme-' . $user['theme'];
     ?><!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title><?= e($user['display_name']) ?> · Links</title><link rel="stylesheet" href="/assets/css/styles.css"></head>
-<body class="<?= e($themeClass) ?>">
-  <main class="container">
-    <section class="profile">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title><?= e($user['display_name']) ?> · Links</title><link rel="stylesheet" href="/assets/css/paos.css"></head>
+<body>
+  <header class="container">
+    <div class="profile">
       <?php if (!empty($user['avatar_path'])): ?>
-        <img class="avatar" src="<?= e($user['avatar_path']) ?>" alt="Avatar">
+        <img class="avatar" src="<?= e($user['avatar_path']) ?>" alt="">
       <?php endif; ?>
-      <h1 class="name">@<?= e($user['username']) ?></h1>
+      <h1 class="site-title"><?= e($user['display_name']) ?></h1>
       <?php if (!empty($user['bio'])): ?>
-        <p class="bio"><?= nl2br(e($user['bio'])) ?></p>
+        <p class="site-subtitle"><?= nl2br(e($user['bio'])) ?></p>
       <?php endif; ?>
-    </section>
-    <section class="links">
-      <?php foreach ($links as $l): ?>
-        <a class="link-btn" style="--btn-color: <?= e($l['color_hex']) ?>;" href="/index.php?go=<?= (int)$l['id'] ?>" rel="noopener">
-          <span class="icon">
-            <?php
-              $svg = \App\render_icon_svg($l['icon_slug'] ?? 'link');
-              echo $svg ?: '';
-            ?>
-          </span>
-          <span class="title"><?= e($l['title']) ?></span>
-        </a>
-      <?php endforeach; ?>
-    </section>
+    </div>
+  </header>
+  <main class="container">
+    <div class="stack">
+      <nav class="link-list">
+        <?php foreach ($links as $l): ?>
+          <?php
+            $href = '/index.php?go=' . (int)$l['id'];
+            $hasDesc = !empty(trim((string)($l['description'] ?? '')));
+          ?>
+          <?php if ($hasDesc): ?>
+            <a class="card" href="<?= e($href) ?>" rel="noopener">
+              <h3><?= e($l['title']) ?></h3>
+              <p><?= nl2br(e(trim($l['description']))) ?></p>
+            </a>
+          <?php else: ?>
+            <a class="button" href="<?= e($href) ?>" rel="noopener">
+              <span class="icon">
+                <?php $svg = \App\render_icon_svg($l['icon_slug'] ?? 'link'); echo $svg ?: ''; ?>
+              </span>
+              <span class="title"><?= e($l['title']) ?></span>
+            </a>
+          <?php endif; ?>
+        <?php endforeach; ?>
+      </nav>
+    </div>
   </main>
 </body></html><?php
     exit;
 }
 ?><!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>LinkHub</title><link rel="stylesheet" href="/assets/css/styles.css"></head>
-<body class="theme-light">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>LinkHub</title><link rel="stylesheet" href="/assets/css/paos.css"></head>
+<body>
   <main class="container">
-    <h1>LinkHub</h1>
-    <p>Create your profile at <code>/admin</code> and visit <code>/@username</code> to share your link‑in‑bio page.</p>
+    <div class="stack">
+      <h1>LinkHub</h1>
+      <p class="muted">Create your profile at <code>/admin</code> and visit <code>/@username</code> to share your link‑in‑bio page.</p>
+    </div>
   </main>
 </body></html>
