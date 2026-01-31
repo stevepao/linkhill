@@ -1,4 +1,10 @@
 <?php
+/**
+ * links.php — Manage links.
+ * Project: linkhill
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 Hillwork, LLC
+ */
 declare(strict_types=1);
 use function App\{pdo, e, require_user, links_has_description};
 require __DIR__ . '/../inc/db.php';

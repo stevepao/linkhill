@@ -1,4 +1,10 @@
 <?php
+/**
+ * index.php — Public homepage and profile pages.
+ * Project: linkhill
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 Hillwork, LLC
+ */
 declare(strict_types=1);
 use function App\{pdo, e, config, base_url, links_has_description, is_valid_hex_color, link_contrast_text, link_darken, link_muted_rgba};
 require __DIR__ . '/inc/db.php';

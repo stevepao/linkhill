@@ -1,4 +1,10 @@
 <?php
+/**
+ * login.php — Admin login.
+ * Project: linkhill
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 Hillwork, LLC
+ */
 declare(strict_types=1);
 use function App\{config, e, webauthn_available};
 require __DIR__ . '/../inc/db.php';

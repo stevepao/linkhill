@@ -1,4 +1,10 @@
 <?php
+/**
+ * reset_sent.php — Reset link sent confirmation.
+ * Project: linkhill
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 Hillwork, LLC
+ */
 declare(strict_types=1);
 use function App\{config, e};
 require __DIR__ . '/../inc/db.php';

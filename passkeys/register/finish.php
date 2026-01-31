@@ -1,4 +1,10 @@
 <?php
+/**
+ * finish.php — Passkey registration assertion finish.
+ * Project: linkhill
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 Hillwork, LLC
+ */
 declare(strict_types=1);
 use function App\{pdo, require_user, webauthn_service, rate_limit_check, rate_limit_identifier, json_response};
 require __DIR__ . '/../../inc/db.php';

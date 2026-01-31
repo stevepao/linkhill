@@ -1,4 +1,10 @@
 <?php
+/**
+ * rate_limit.php — File-based rate limiter.
+ * Project: linkhill
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 Hillwork, LLC
+ */
 declare(strict_types=1);
 namespace App;
 

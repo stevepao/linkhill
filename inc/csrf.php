@@ -1,4 +1,10 @@
 <?php
+/**
+ * csrf.php — CSRF token helpers.
+ * Project: linkhill
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 Hillwork, LLC
+ */
 declare(strict_types=1);
 namespace App;
 

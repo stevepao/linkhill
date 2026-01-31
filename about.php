@@ -1,4 +1,10 @@
 <?php
+/**
+ * about.php — About page.
+ * Project: linkhill
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 Hillwork, LLC
+ */
 declare(strict_types=1);
 use function App\{config, e, base_url};
 require __DIR__ . '/inc/db.php';

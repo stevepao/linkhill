@@ -1,4 +1,10 @@
 <?php
+/**
+ * link_crud.php — Link create/update/delete API.
+ * Project: linkhill
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 Hillwork, LLC
+ */
 declare(strict_types=1);
 use function App\{pdo, require_user, json_response, sanitize_url, is_valid_hex_color, links_has_description};
 require __DIR__ . '/../../inc/db.php';

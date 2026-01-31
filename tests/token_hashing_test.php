@@ -1,9 +1,13 @@
 <?php
-declare(strict_types=1);
 /**
- * Minimal test: password reset token encoding and hash round-trip (no DB).
+ * token_hashing_test.php — Token encode/decode and hash round-trip test.
+ * Project: linkhill
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 Hillwork, LLC
+ *
  * Run: php tests/token_hashing_test.php
  */
+declare(strict_types=1);
 $raw = random_bytes(32);
 $tokenForLink = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($raw));
 $hash = hash('sha512', $raw, true);

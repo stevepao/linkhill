@@ -1,4 +1,10 @@
 <?php
+/**
+ * forgot.php — Forgot password form.
+ * Project: linkhill
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 Hillwork, LLC
+ */
 declare(strict_types=1);
 use function App\{config, e, pdo, base_url, send_mail, rate_limit_check, rate_limit_identifier_with_email, password_reset_create, csrf_token, csrf_field, csrf_verify};
 require __DIR__ . '/../inc/db.php';

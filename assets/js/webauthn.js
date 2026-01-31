@@ -1,5 +1,9 @@
 /**
- * WebAuthn / Passkeys client helper.
+ * webauthn.js — WebAuthn / Passkeys client helper.
+ * Project: linkhill
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 Hillwork, LLC
+ *
  * Base64url encode/decode and credential create/get for registration and authentication.
  */
 (function () {

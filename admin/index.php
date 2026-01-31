@@ -1,4 +1,10 @@
 <?php
+/**
+ * index.php — Admin dashboard.
+ * Project: linkhill
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 Hillwork, LLC
+ */
 declare(strict_types=1);
 use function App\{pdo, e, require_user, require_admin};
 require __DIR__ . '/../inc/db.php';

@@ -1,4 +1,10 @@
 <?php
+/**
+ * webauthn_lbuchs.php — WebAuthn implementation (lbuchs/webauthn).
+ * Project: linkhill
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 Hillwork, LLC
+ */
 declare(strict_types=1);
 namespace App\WebAuthn;
 

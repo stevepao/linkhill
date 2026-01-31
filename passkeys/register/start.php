@@ -1,4 +1,10 @@
 <?php
+/**
+ * start.php — Passkey registration challenge start.
+ * Project: linkhill
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 Hillwork, LLC
+ */
 declare(strict_types=1);
 ob_start();
 use function App\{pdo, require_user, webauthn_service, rate_limit_check, rate_limit_identifier, json_response};

@@ -1,4 +1,10 @@
 <?php
+/**
+ * index.php — Security settings (MFA, passkeys, password).
+ * Project: linkhill
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 Hillwork, LLC
+ */
 declare(strict_types=1);
 use function App\{pdo, e, require_user, config, bump_user_session_version, webauthn_available};
 require __DIR__ . '/../../inc/db.php';

@@ -1,4 +1,10 @@
 <?php
+/**
+ * signup.php — User registration.
+ * Project: linkhill
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 Hillwork, LLC
+ */
 declare(strict_types=1);
 use function App\{config, e, pdo, base_url, send_mail, rate_limit_check, rate_limit_identifier, csrf_token, csrf_field, csrf_verify, slugify_username, users_have_email_verified, users_have_webauthn_handle};
 require __DIR__ . '/inc/db.php';

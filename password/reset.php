@@ -1,4 +1,10 @@
 <?php
+/**
+ * reset.php — Password reset handler.
+ * Project: linkhill
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 Hillwork, LLC
+ */
 declare(strict_types=1);
 use function App\{config, e, pdo, csrf_verify, csrf_field, password_reset_find_valid, password_reset_mark_used, bump_user_session_version, rate_limit_check, rate_limit_identifier};
 require __DIR__ . '/../inc/db.php';
