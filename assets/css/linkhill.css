@@ -69,8 +69,16 @@ body {
   padding: 0 var(--s-5);
   margin: 0 auto;
 }
+/* Mobile: body-level horizontal inset so text isn’t tight to edges (phones, tablets, notched iPhones) */
 @media (max-width: 768px) {
-  .container { padding-left: 5%; padding-right: 5%; }
+  body {
+    padding-left: max(24px, 14%, env(safe-area-inset-left, 0px));
+    padding-right: max(24px, 14%, env(safe-area-inset-right, 0px));
+  }
+  .container {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 header.container { padding: var(--s-7) 0 var(--s-5); }
 main.container { padding: var(--s-5) 0 var(--s-8); }

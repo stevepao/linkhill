@@ -31,6 +31,17 @@ body {
   margin: 24px auto;
   padding: 0 16px;
 }
+/* Mobile: more horizontal padding so text isn't tight on iPhone (Safari/Chrome) */
+@media (max-width: 768px) {
+  body {
+    padding-left: max(24px, 14%, env(safe-area-inset-left, 0px));
+    padding-right: max(24px, 14%, env(safe-area-inset-right, 0px));
+  }
+  .container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
 @media (min-width: 600px) {
   .container { max-width: 560px; }
 }
