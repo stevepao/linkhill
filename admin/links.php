@@ -55,7 +55,7 @@ $icons = \App\icon_list();
             </select>
           </label>
         </div>
-        <button type="submit">Add</button>
+        <button type="submit">Add Link</button>
       </div>
     </form>
   </section>
@@ -80,10 +80,12 @@ $icons = \App\icon_list();
             <span class="drag" title="Drag to reorder">⋮⋮</span>
             <div class="link-item__fields">
               <?php if ($isHeading): ?>
-                <label class="link-item__label">Heading<br><input class="title" type="text" value="<?= e($l['title']) ?>" maxlength="80" placeholder="Section title"></label>
-                <div class="link-item__meta">
-                  <button type="button" class="save">Save</button>
-                  <button type="button" class="delete danger">Delete</button>
+                <div class="link-item__heading-row">
+                  <label class="link-item__label">Heading<br><input class="title" type="text" value="<?= e($l['title']) ?>" maxlength="80" placeholder="Section title"></label>
+                  <div class="link-item__actions">
+                    <button type="button" class="save">Save</button>
+                    <button type="button" class="delete danger">Delete</button>
+                  </div>
                 </div>
               <?php else: ?>
                 <div class="grid">
@@ -92,10 +94,14 @@ $icons = \App\icon_list();
                 </div>
                 <?php if ($hasDesc): ?><label class="link-item__label">Description (optional)<br><input class="description" type="text" placeholder="Optional blurb (shows as card)" value="<?= e($l['description'] ?? '') ?>" maxlength="500"></label><?php endif; ?>
                 <div class="link-item__meta">
-                  <label class="link-item__meta-label">Color <input class="color" type="color" value="<?= e($l['color_hex']) ?>" title="Button color"></label>
-                  <label class="link-item__meta-label">Icon <select class="icon"><?php foreach ($icons as $slug => $path): ?><option value="<?= e($slug) ?>" <?= $slug === ($l['icon_slug'] ?? 'link') ? 'selected' : '' ?>><?= e($slug) ?></option><?php endforeach; ?></select></label>
-                  <button type="button" class="save">Save</button>
-                  <button type="button" class="delete danger">Delete</button>
+                  <div class="link-item__meta-left">
+                    <label class="link-item__meta-label">Color <input class="color" type="color" value="<?= e($l['color_hex']) ?>" title="Button color"></label>
+                    <label class="link-item__meta-label">Icon <select class="icon"><?php foreach ($icons as $slug => $path): ?><option value="<?= e($slug) ?>" <?= $slug === ($l['icon_slug'] ?? 'link') ? 'selected' : '' ?>><?= e($slug) ?></option><?php endforeach; ?></select></label>
+                  </div>
+                  <div class="link-item__actions">
+                    <button type="button" class="save">Save</button>
+                    <button type="button" class="delete danger">Delete</button>
+                  </div>
                 </div>
               <?php endif; ?>
             </div>
