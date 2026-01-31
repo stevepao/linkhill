@@ -69,8 +69,8 @@ body {
   padding: 0 var(--s-5);
   margin: 0 auto;
 }
-@media (max-width: 400px) {
-  .container { padding: 0 var(--s-4); }
+@media (max-width: 768px) {
+  .container { padding-left: 5%; padding-right: 5%; }
 }
 header.container { padding: var(--s-7) 0 var(--s-5); }
 main.container { padding: var(--s-5) 0 var(--s-8); }
