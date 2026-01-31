@@ -72,8 +72,8 @@ body {
 /* Mobile: body-level horizontal inset so text isn’t tight to edges (phones, tablets, notched iPhones) */
 @media (max-width: 768px) {
   body {
-    padding-left: max(24px, 14%, env(safe-area-inset-left, 0px));
-    padding-right: max(24px, 14%, env(safe-area-inset-right, 0px));
+    padding-left: max(20px, 11%, env(safe-area-inset-left, 0px));
+    padding-right: max(20px, 11%, env(safe-area-inset-right, 0px));
   }
   .container {
     padding-left: 0;
