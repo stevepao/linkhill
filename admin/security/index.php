@@ -86,68 +86,64 @@ if (!empty($_SESSION['mfa_tmp_secret'])) {
     $uri = \App\Totp\provisioning_uri($_SESSION['mfa_tmp_secret'], $u['email'], $issuer);
 }
 $csrf = \App\csrf_token();
-?><!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Security</title><link rel="stylesheet" href="/assets/css/styles.css"></head>
-<body class="theme-light"><main class="container">
-  <header class="admin-header">
-    <h1>Security</h1>
-    <nav>
-      <?php if (($me['role'] ?? '') === 'admin'): ?><a href="/admin/">Dashboard</a><?php endif; ?>
-      <a href="/admin/profile.php">Profile</a>
-      <a href="/admin/links.php">Links</a>
-      <a href="/admin/security/">Security</a>
-      <?php if (($me['role'] ?? '') === 'admin'): ?><a href="/admin/users.php">Users</a><?php endif; ?>
-      <a href="/admin/logout.php" class="danger">Logout</a>
-    </nav>
-  </header>
-  <nav class="tabs" role="tablist">
-    <a href="/admin/security/?tab=password" class="tab<?= $tab === 'password' ? ' active' : '' ?>" role="tab">Password</a>
-    <a href="/admin/security/?tab=totp" class="tab<?= $tab === 'totp' ? ' active' : '' ?>" role="tab">Two‑Step Verification</a>
-    <a href="/admin/security/?tab=passkeys" class="tab<?= $tab === 'passkeys' ? ' active' : '' ?>" role="tab">Passkeys</a>
+$pageTitle = 'Security';
+$bodyClass = 'min-h-screen bg-zinc-50 text-zinc-900 antialiased';
+require __DIR__ . '/../../inc/partials/head.php';
+?>
+<main class="mx-auto max-w-3xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
+<?php
+$nav_heading = 'Security';
+$nav_current = 'security';
+require __DIR__ . '/../../inc/partials/admin_nav.php';
+?>
+  <nav class="mb-6 flex flex-wrap gap-0 border-b border-zinc-200" role="tablist" aria-label="Security sections">
+    <a href="/admin/security/?tab=password" class="tab-link<?= $tab === 'password' ? ' tab-link-active' : '' ?>" role="tab">Password</a>
+    <a href="/admin/security/?tab=totp" class="tab-link<?= $tab === 'totp' ? ' tab-link-active' : '' ?>" role="tab">Two‑step verification</a>
+    <a href="/admin/security/?tab=passkeys" class="tab-link<?= $tab === 'passkeys' ? ' tab-link-active' : '' ?>" role="tab">Passkeys</a>
   </nav>
-  <?php if ($msg): ?><div class="alert"><?= e($msg) ?></div><?php endif; ?>
+  <?php if ($msg): ?><div class="alert mb-6"><?= e($msg) ?></div><?php endif; ?>
 
   <?php if ($tab === 'password'): ?>
-  <section class="card">
-    <h2>Change password</h2>
-    <p>Requires your current password. After changing, all other sessions will be signed out.</p>
-    <form method="post">
+  <section class="card form-stack">
+    <h2 class="text-lg font-semibold text-zinc-900">Change password</h2>
+    <p class="muted text-sm leading-relaxed">Requires your current password. After changing, all other sessions will be signed out.</p>
+    <form method="post" class="form-stack">
       <input type="hidden" name="_token" value="<?= e($csrf) ?>">
       <input type="hidden" name="change_password" value="1">
       <label>Current password<br><input type="password" name="current_password" required autocomplete="current-password"></label>
       <label>New password (min 8 characters)<br><input type="password" name="new_password" required minlength="8" autocomplete="new-password"></label>
       <label>Confirm new password<br><input type="password" name="password_confirm" required minlength="8" autocomplete="new-password"></label>
-      <button type="submit">Update password</button>
+      <button type="submit" class="btn-primary">Update password</button>
     </form>
-    <p><a href="/password/forgot.php">Forgot password?</a></p>
+    <p class="pt-2"><a href="/password/forgot.php" class="font-medium text-teal-700 hover:text-teal-800">Forgot password?</a></p>
   </section>
   <?php endif; ?>
 
   <?php if ($tab === 'totp'): ?>
-  <section class="card">
-    <h2>Two‑Step Verification (TOTP)</h2>
-    <p>Use an authenticator app (e.g. Google Authenticator, Authy) for a second factor when signing in.</p>
+  <section class="card form-stack">
+    <h2 class="text-lg font-semibold text-zinc-900">Two‑step verification (TOTP)</h2>
+    <p class="muted text-sm leading-relaxed">Use an authenticator app (e.g. Google Authenticator, Authy) for a second factor when signing in.</p>
     <?php if ((int)$u['mfa_enabled'] === 1): ?>
-      <p>Two-step verification is <strong>enabled</strong>.</p>
-      <form method="post">
+      <p class="text-sm text-zinc-700">Two-step verification is <strong>enabled</strong>.</p>
+      <form method="post" class="form-stack">
         <input type="hidden" name="_token" value="<?= e($csrf) ?>">
         <label>Enter your current authenticator code to disable<br><input type="text" name="totp_code_disable" inputmode="numeric" pattern="[0-9]{6}" required></label>
-        <button class="danger" name="disable_totp" value="1" type="submit">Disable Two‑Step Verification</button>
+        <button class="btn-danger" name="disable_totp" value="1" type="submit">Disable two‑step verification</button>
       </form>
     <?php else: ?>
       <?php if (empty($_SESSION['mfa_tmp_secret'])): ?>
         <form method="post">
           <input type="hidden" name="_token" value="<?= e($csrf) ?>">
-          <button name="enable_totp" value="1" type="submit">Enable Two‑Step Verification</button>
+          <button name="enable_totp" value="1" type="submit" class="btn-primary">Enable two‑step verification</button>
         </form>
       <?php else: ?>
-        <p>Scan this QR code in your authenticator app, then enter the code below.</p>
-        <div id="qr" style="width:180px;height:180px;"></div>
-        <p>Or enter this secret manually: <code><?= e($_SESSION['mfa_tmp_secret']) ?></code></p>
-        <form method="post">
+        <p class="text-sm text-zinc-700">Scan this QR code in your authenticator app, then enter the code below.</p>
+        <div id="qr" class="rounded-lg border border-zinc-200 bg-white p-2" style="width:180px;height:180px;"></div>
+        <p class="muted text-sm">Or enter this secret manually: <code class="rounded bg-zinc-100 px-1.5 py-0.5 text-xs text-zinc-800"><?= e($_SESSION['mfa_tmp_secret']) ?></code></p>
+        <form method="post" class="form-stack">
           <input type="hidden" name="_token" value="<?= e($csrf) ?>">
           <label>Enter code from app<br><input name="totp_code" inputmode="numeric" pattern="[0-9]{6}" required></label>
-          <button name="verify_totp" value="1" type="submit">Verify &amp; Enable</button>
+          <button name="verify_totp" value="1" type="submit" class="btn-primary">Verify &amp; enable</button>
         </form>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
         <script>
@@ -165,18 +161,18 @@ $csrf = \App\csrf_token();
   <?php endif; ?>
 
   <?php if ($tab === 'passkeys'): ?>
-  <section class="card">
-    <h2>Passkeys</h2>
-    <p>Passkeys are phishing-resistant and fast. Sign in with your device (fingerprint, Face ID, or security key) instead of typing a password.</p>
-    <p>Compatible with current Chrome, Safari, Edge, and mobile devices. <a href="https://support.apple.com/HT213305" target="_blank" rel="noopener">Learn more</a>.</p>
+  <section class="card form-stack">
+    <h2 class="text-lg font-semibold text-zinc-900">Passkeys</h2>
+    <p class="muted text-sm leading-relaxed">Passkeys are phishing-resistant and fast. Sign in with your device (fingerprint, Face ID, or security key) instead of typing a password.</p>
+    <p class="muted text-sm">Compatible with current Chrome, Safari, Edge, and mobile devices. <a href="https://support.apple.com/HT213305" target="_blank" rel="noopener" class="font-medium text-teal-700 hover:text-teal-800">Learn more</a>.</p>
     <?php if (!webauthn_available()): ?>
       <div class="alert alert-error">
-        <p><strong>Passkeys are not available on this server.</strong> They require Composer dependencies. Run <code>composer install</code> locally, then upload the entire <code>vendor/</code> folder to the server (e.g. via FTP/SFTP). See README for IONOS deployment.</p>
+        <p><strong>Passkeys are not available on this server.</strong> They require Composer dependencies. Run <code class="text-xs">composer install</code> locally, then upload the entire <code class="text-xs">vendor/</code> folder to the server (e.g. via FTP/SFTP). See README for IONOS deployment.</p>
       </div>
     <?php else: ?>
       <div id="passkeys-list"></div>
       <p><button type="button" id="add-passkey-btn" class="passkey-add">Add passkey</button></p>
-      <p id="passkey-hint" class="muted" style="display:none;">Passkeys require a supported browser (e.g. Chrome, Safari, Edge).</p>
+      <p id="passkey-hint" class="muted hidden">Passkeys require a supported browser (e.g. Chrome, Safari, Edge).</p>
     <?php endif; ?>
   </section>
   <meta name="csrf-token" content="<?= e($csrf) ?>">

@@ -21,31 +21,27 @@ $links = pdo()->prepare("SELECT $cols FROM links WHERE user_id=? ORDER BY positi
 $links->execute([$me['id']]);
 $links = $links->fetchAll();
 $icons = \App\icon_list();
-?><!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Links</title><link rel="stylesheet" href="/assets/css/styles.css"></head>
-<body class="theme-light"><main class="container">
-  <header class="admin-header">
-    <h1>Links</h1>
-    <nav>
-      <?php if (($me['role'] ?? '') === 'admin'): ?><a href="/admin/">Dashboard</a><?php endif; ?>
-      <a href="/admin/profile.php">Profile</a>
-      <a href="/admin/links.php">Links</a>
-      <a href="/admin/security/">Security</a>
-      <?php if (($me['role'] ?? '') === 'admin'): ?><a href="/admin/users.php">Users</a><?php endif; ?>
-      <a href="/admin/logout.php" class="danger">Logout</a>
-    </nav>
-  </header>
-  <section class="card">
-    <h2>Add link</h2>
+$pageTitle = 'Links';
+$bodyClass = 'min-h-screen bg-zinc-50 text-zinc-900 antialiased';
+require __DIR__ . '/../inc/partials/head.php';
+?>
+<main class="mx-auto max-w-3xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
+<?php
+$nav_heading = 'Links';
+$nav_current = 'links';
+require __DIR__ . '/../inc/partials/admin_nav.php';
+?>
+  <section class="card mb-6">
+    <h2 class="mb-4 text-lg font-semibold text-zinc-900">Add link</h2>
     <form id="addForm">
       <input type="hidden" name="_token" value="<?= e($csrf) ?>">
-      <div class="grid">
+      <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <label>Title<br><input type="text" name="title" required maxlength="80"></label>
         <label>URL<br><input type="url" name="url" placeholder="https://..." required></label>
       </div>
       <?php if ($hasDesc): ?><label>Description (optional; if set, link shows as a card with blurb on your page)<br><input type="text" name="description" placeholder="Optional blurb" maxlength="500"></label><?php endif; ?>
-      <div class="add-form__row">
-        <div class="grid">
+      <div class="flex flex-wrap items-end gap-3">
+        <div class="grid min-w-0 flex-1 grid-cols-1 gap-3 sm:grid-cols-2">
           <label>Color<br><input type="color" name="color_hex" value="#111827"></label>
           <label>Icon<br>
             <select name="icon_slug">
@@ -55,24 +51,24 @@ $icons = \App\icon_list();
             </select>
           </label>
         </div>
-        <button type="submit">Add Link</button>
+        <button type="submit" class="btn-primary shrink-0">Add link</button>
       </div>
     </form>
   </section>
-  <section class="card">
-    <h2>Add heading</h2>
+  <section class="card mb-6">
+    <h2 class="mb-4 text-lg font-semibold text-zinc-900">Add heading</h2>
     <form id="addHeadingForm">
       <input type="hidden" name="_token" value="<?= e($csrf) ?>">
       <input type="hidden" name="entry_type" value="heading">
-      <div class="add-form__row">
-        <label class="add-heading__label">Heading text<br><input type="text" name="title" placeholder="Section title (e.g. Social links)" maxlength="80" required></label>
-        <button type="submit">Add heading</button>
+      <div class="flex flex-wrap items-end gap-3">
+        <label class="min-w-[12rem] flex-1">Heading text<br><input type="text" name="title" placeholder="Section title (e.g. Social links)" maxlength="80" required></label>
+        <button type="submit" class="btn-primary shrink-0">Add heading</button>
       </div>
     </form>
   </section>
   <section class="card">
-    <h2>Your entries</h2>
-    <ul id="linkList" class="link-list<?= $hasDesc ? ' link-list--with-desc' : '' ?>" data-csrf="<?= e($csrf) ?>">
+    <h2 class="mb-4 text-lg font-semibold text-zinc-900">Your entries</h2>
+    <ul id="linkList" class="m-0 flex list-none flex-col gap-3 p-0" data-csrf="<?= e($csrf) ?>">
       <?php foreach ($links as $l): ?>
         <?php $isHeading = ($l['entry_type'] ?? 'link') === 'heading'; ?>
         <li class="link-item<?= $isHeading ? ' link-item--heading' : '' ?>" data-id="<?= (int)$l['id'] ?>" data-type="<?= $isHeading ? 'heading' : 'link' ?>">

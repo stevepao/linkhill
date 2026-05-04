@@ -13,11 +13,10 @@ $appName = e(config()['app_name'] ?? 'Hillwork');
 $canonical = rtrim(base_url(), '/') . '/about';
 $metaDesc = $appName . ' is a free Linktree alternative. Create a clean, customizable link-in-bio page. No paywalls. Own your data. Best free link in bio tool.';
 $metaKeywords = 'Linktree alternative, link in bio, about ' . $appName . ', free link page';
-$year = (int) date('Y');
-?><!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>About · <?= $appName ?> — Free Linktree Alternative</title>
+$pageTitle = 'About · ' . $appName . ' — Free Linktree Alternative';
+$bodyClass = 'min-h-screen bg-zinc-50 text-zinc-900 antialiased';
+ob_start();
+?>
 <meta name="description" content="<?= e($metaDesc) ?>">
 <meta name="keywords" content="<?= e($metaKeywords) ?>">
 <link rel="canonical" href="<?= e($canonical) ?>">
@@ -28,14 +27,16 @@ $year = (int) date('Y');
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="About · <?= $appName ?>">
 <meta name="twitter:description" content="<?= e($metaDesc) ?>">
-<link rel="stylesheet" href="/assets/css/linkhill.css"></head>
-<body class="theme-light">
-  <main class="container">
-    <div class="stack">
-      <h1>About</h1>
-      <p><?= $appName ?> is a free, open alternative to Linktree. Create a clean, customizable link‑in‑bio page. No paywalls. Own your data.</p>
-      <p><a href="/">Home</a></p>
+<?php
+$headExtra = ob_get_clean();
+require __DIR__ . '/inc/partials/head.php';
+?>
+  <main class="mx-auto max-w-md px-4 py-12 sm:px-5">
+    <div class="card">
+      <h1 class="mb-3 text-2xl font-semibold tracking-tight text-zinc-900">About</h1>
+      <p class="text-sm leading-relaxed text-zinc-600"><?= $appName ?> is a free, open alternative to Linktree. Create a clean, customizable link‑in‑bio page. No paywalls. Own your data.</p>
+      <p class="mt-6"><a href="/" class="font-medium text-teal-700 hover:text-teal-800">Home</a></p>
     </div>
   </main>
-  <footer class="footer"><div class="container"><nav aria-label="Footer"><a href="/about">About</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/contact">Contact</a></nav><p class="footer-copy">© <?= $year ?> <a href="https://hillwork.us">Hillwork, LLC</a></p></div></footer>
+<?php require __DIR__ . '/inc/partials/site_footer.php'; ?>
 </body></html>

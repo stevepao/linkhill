@@ -22,25 +22,30 @@ if ($isAdmin) {
     $counts['users'] = (int)pdo()->query("SELECT COUNT(*) AS c FROM users")->fetch()['c'];
     $counts['links'] = (int)pdo()->query("SELECT COUNT(*) AS c FROM links")->fetch()['c'];
 }
-?><!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dashboard</title><link rel="stylesheet" href="/assets/css/styles.css"></head>
-<body class="theme-light"><main class="container">
-  <header class="admin-header">
-    <h1>Dashboard</h1>
-    <nav>
-      <a href="/admin/profile.php">Profile</a>
-      <a href="/admin/links.php">Links</a>
-      <a href="/admin/security/">Security</a>
-      <?php if ($isAdmin): ?><a href="/admin/users.php">Users</a><?php endif; ?>
-      <a class="danger" href="/admin/logout.php">Logout</a>
-    </nav>
-  </header>
+$pageTitle = 'Dashboard';
+$bodyClass = 'min-h-screen bg-zinc-50 text-zinc-900 antialiased';
+require __DIR__ . '/../inc/partials/head.php';
+?>
+<main class="mx-auto max-w-3xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
+<?php
+$nav_heading = 'Dashboard';
+$nav_current = 'dashboard';
+require __DIR__ . '/../inc/partials/admin_nav.php';
+?>
   <?php if ($isAdmin): ?>
-    <section class="cards">
-      <div class="card"><strong><?= $counts['users'] ?></strong><div>Users</div></div>
-      <div class="card"><strong><?= $counts['links'] ?></strong><div>Links</div></div>
-    </section>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div class="card text-center">
+        <p class="text-3xl font-semibold tracking-tight text-teal-700"><?= $counts['users'] ?></p>
+        <p class="muted mt-1">Users</p>
+      </div>
+      <div class="card text-center">
+        <p class="text-3xl font-semibold tracking-tight text-teal-700"><?= $counts['links'] ?></p>
+        <p class="muted mt-1">Links</p>
+      </div>
+    </div>
   <?php else: ?>
-    <p>Welcome, <?= e($u['name']) ?>. Use the links above to manage your profile.</p>
+    <div class="card">
+      <p class="text-sm text-zinc-700">Welcome, <?= e($u['name']) ?>. Use the links above to manage your profile.</p>
+    </div>
   <?php endif; ?>
 </main></body></html>

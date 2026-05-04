@@ -59,26 +59,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $stmt = pdo()->prepare("SELECT email,username,display_name,bio,custom_footer,theme,avatar_path FROM users WHERE id=?");
 $stmt->execute([$me['id']]);
 $row = $stmt->fetch();
-?><!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Profile</title><link rel="stylesheet" href="/assets/css/styles.css"></head>
-<body class="theme-light"><main class="container">
-  <header class="admin-header">
-    <h1>Profile</h1>
-    <nav>
-      <?php if (($me['role'] ?? '') === 'admin'): ?><a href="/admin/">Dashboard</a><?php endif; ?>
-      <a href="/admin/profile.php">Profile</a>
-      <a href="/admin/links.php">Links</a>
-      <a href="/admin/security/">Security</a>
-      <?php if (($me['role'] ?? '') === 'admin'): ?><a href="/admin/users.php">Users</a><?php endif; ?>
-      <a href="/admin/logout.php" class="danger">Logout</a>
-    </nav>
-  </header>
-  <?php if ($msg): ?><div class="alert"><?= e($msg) ?></div><?php endif; ?>
+$pageTitle = 'Profile';
+$bodyClass = 'min-h-screen bg-zinc-50 text-zinc-900 antialiased';
+require __DIR__ . '/../inc/partials/head.php';
+?>
+<main class="mx-auto max-w-3xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
+<?php
+$nav_heading = 'Profile';
+$nav_current = 'profile';
+require __DIR__ . '/../inc/partials/admin_nav.php';
+?>
+  <?php if ($msg): ?><div class="alert mb-6"><?= e($msg) ?></div><?php endif; ?>
+  <div class="card form-stack">
   <form method="post" enctype="multipart/form-data">
     <?= \App\csrf_field() ?>
-    <div class="grid">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <label>Display name<br><input type="text" name="display_name" value="<?= e($row['display_name']) ?>" required></label>
-      <label>Username (public URL)<br><input type="text" value="@<?= e($row['username']) ?>" disabled></label>
+      <label>Username (public URL)<br><input type="text" value="@<?= e($row['username']) ?>" disabled class="bg-zinc-100 text-zinc-600"></label>
     </div>
     <label>Bio<br><textarea name="bio" rows="4"><?= e($row['bio']) ?></textarea></label>
     <label>Custom footer (optional)<br><textarea name="custom_footer" rows="3" placeholder="Shown centered below your links on your public page"><?= e($row['custom_footer'] ?? '') ?></textarea></label>
@@ -89,14 +86,18 @@ $row = $stmt->fetch();
         <option value="custom"<?= $row['theme']==='custom'?'selected':'' ?>>Custom</option>
       </select>
     </label>
-    <div class="avatar-row">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-end">
       <?php if (!empty($row['avatar_path'])): ?>
-        <img src="<?= e($row['avatar_path']) ?>" alt="Avatar" class="avatar sm">
+        <img src="<?= e($row['avatar_path']) ?>" alt="Avatar" class="h-16 w-16 shrink-0 rounded-full object-cover ring-2 ring-zinc-100">
       <?php endif; ?>
-      <label>Avatar (JPG/PNG, ≤200KB)
+      <label class="flex-1">Avatar (JPG/PNG, ≤200KB)
         <input type="file" name="avatar" accept="image/jpeg,image/png">
       </label>
     </div>
-    <button type="submit">Save profile</button>
+    <div class="pt-2">
+      <button type="submit" class="btn-primary">Save profile</button>
+    </div>
   </form>
-  <p>Public page: <a href="/@<?= e($row['username']) ?>" target="_blank">/@<?= e($row['username']) ?></a></p></main></body></html>
+  </div>
+  <p class="mt-6 text-sm text-zinc-600">Public page: <a href="/@<?= e($row['username']) ?>" target="_blank" rel="noopener" class="font-medium text-teal-700 hover:text-teal-800">/@<?= e($row['username']) ?></a></p>
+</main></body></html>

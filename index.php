@@ -53,10 +53,15 @@ if ($u !== null) {
     include __DIR__ . '/inc/icons.php';
     $profileCanonical = rtrim(base_url(), '/') . '/@' . $user['username'];
     $profileMetaDesc = e($user['display_name']) . ' — link in bio, links and profile. View all links for ' . e($user['display_name']) . '.';
-    ?><!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?= e($user['display_name']) ?> · Links | Link in Bio</title>
+    $pageTitle = e($user['display_name']) . ' · Links | Link in Bio';
+    $theme = (string) ($user['theme'] ?? 'light');
+    $bodyClass = match ($theme) {
+        'dark' => 'min-h-screen bg-zinc-950 text-zinc-100 antialiased',
+        'custom' => 'min-h-screen bg-zinc-50 text-zinc-900 antialiased',
+        default => 'min-h-screen bg-zinc-50 text-zinc-900 antialiased',
+    };
+    ob_start();
+    ?>
 <meta name="description" content="<?= $profileMetaDesc ?>">
 <link rel="canonical" href="<?= e($profileCanonical) ?>">
 <meta property="og:type" content="profile">
@@ -66,25 +71,24 @@ if ($u !== null) {
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="<?= e($user['display_name']) ?> · Links">
 <meta name="twitter:description" content="<?= $profileMetaDesc ?>">
-<link rel="stylesheet" href="/assets/css/linkhill.css"></head>
-<body class="theme-<?= e($user['theme']) ?>">
-  <header class="container">
-    <div class="profile">
+<?php
+    $headExtra = ob_get_clean();
+    require __DIR__ . '/inc/partials/head.php';
+?>
+  <main class="mx-auto max-w-md px-4 pb-16 pt-8 sm:px-5">
+    <header class="mb-8 rounded-xl border border-zinc-200/90 bg-white p-6 text-center shadow-sm">
       <?php if (!empty($user['avatar_path'])): ?>
-        <img class="avatar" src="<?= e($user['avatar_path']) ?>" alt="">
+        <img class="mx-auto mb-4 h-24 w-24 rounded-full object-cover ring-2 ring-zinc-100 sm:h-28 sm:w-28" src="<?= e($user['avatar_path']) ?>" alt="">
       <?php endif; ?>
-      <h1 class="site-title"><?= e($user['display_name']) ?></h1>
+      <h1 class="text-2xl font-semibold tracking-tight text-zinc-900 <?= $theme === 'dark' ? '!text-zinc-50' : '' ?>"><?= e($user['display_name']) ?></h1>
       <?php if (!empty($user['bio'])): ?>
-        <p class="site-subtitle"><?= nl2br(e($user['bio'])) ?></p>
+        <p class="mt-2 text-sm leading-relaxed text-zinc-600 <?= $theme === 'dark' ? '!text-zinc-400' : '' ?>"><?= nl2br(e($user['bio'])) ?></p>
       <?php endif; ?>
-    </div>
-  </header>
-  <main class="container">
-    <div class="stack">
-      <nav class="link-list">
+    </header>
+    <nav class="flex flex-col gap-3" aria-label="Links">
         <?php foreach ($links as $l): ?>
           <?php if (($l['entry_type'] ?? 'link') === 'heading'): ?>
-            <h2 class="entry-heading"><?= e($l['title']) ?></h2>
+            <h2 class="mb-1 mt-8 text-center text-lg font-semibold tracking-tight text-zinc-900 first:mt-0 <?= $theme === 'dark' ? '!text-zinc-100' : '' ?>"><?= e($l['title']) ?></h2>
           <?php else: ?>
           <?php
             $href = '/index.php?go=' . (int)$l['id'];
@@ -94,25 +98,24 @@ if ($u !== null) {
             $cardStyle = '--card-bg:' . $hex . ';--border:' . link_darken($hex, 0.2) . ';color:' . link_contrast_text($hex) . ';--muted:' . link_muted_rgba($hex) . ';';
           ?>
           <?php if ($showCard): ?>
-            <a class="card" href="<?= e($href) ?>" rel="noopener" style="<?= e($cardStyle) ?>">
+            <a class="profile-link-card" href="<?= e($href) ?>" rel="noopener" style="<?= e($cardStyle) ?>">
               <h3><?= e($l['title']) ?></h3>
               <p><?= nl2br(e(trim($l['description']))) ?></p>
             </a>
           <?php else: ?>
-            <a class="button" href="<?= e($href) ?>" rel="noopener" style="<?= e($btnStyle) ?>">
-              <span class="icon">
+            <a class="profile-link-btn" href="<?= e($href) ?>" rel="noopener" style="<?= e($btnStyle) ?>">
+              <span class="icon inline-flex shrink-0">
                 <?php $svg = \App\render_icon_svg($l['icon_slug'] ?? 'link'); echo $svg ?: ''; ?>
               </span>
-              <span class="title"><?= e($l['title']) ?></span>
+              <span class="text-center"><?= e($l['title']) ?></span>
             </a>
           <?php endif; ?>
           <?php endif; ?>
         <?php endforeach; ?>
-      </nav>
+    </nav>
       <?php if (!empty(trim((string)($user['custom_footer'] ?? '')))): ?>
-      <footer class="profile-footer"><?= nl2br(e(trim($user['custom_footer']))) ?></footer>
+      <footer class="mt-10 border-t border-zinc-200/80 pt-6 text-center text-xs leading-relaxed text-zinc-500 <?= $theme === 'dark' ? 'border-zinc-800 !text-zinc-400' : '' ?>"><?= nl2br(e(trim($user['custom_footer']))) ?></footer>
       <?php endif; ?>
-    </div>
   </main>
 </body></html><?php
     exit;
@@ -123,12 +126,10 @@ $canonical = rtrim(base_url(), '/');
 $metaDesc = 'Free Linktree alternative: create a clean link-in-bio page in minutes. No paywalls, no lock-in. Best free link in bio tool for Instagram, TikTok, and more.';
 $metaKeywords = 'Linktree alternative, link in bio, link in bio free, bio link, Instagram link, TikTok link, link hub, link page';
 $year = (int) date('Y');
-?><!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?= e($appName) ?> — Free Linktree Alternative | Link in Bio</title>
+$pageTitle = e($appName) . ' — Free Linktree Alternative | Link in Bio';
+$bodyClass = 'min-h-screen bg-zinc-50 text-zinc-900 antialiased';
+ob_start();
+?>
   <meta name="description" content="<?= e($metaDesc) ?>">
   <meta name="keywords" content="<?= e($metaKeywords) ?>">
   <link rel="canonical" href="<?= e($canonical) ?>/">
@@ -139,52 +140,39 @@ $year = (int) date('Y');
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="<?= e($appName) ?> — Free Linktree Alternative | Link in Bio">
   <meta name="twitter:description" content="<?= e($metaDesc) ?>">
-  <link rel="stylesheet" href="/assets/css/linkhill.css">
-</head>
-<body class="theme-light home-page">
-  <header class="container hero">
-    <div class="profile">
-      <h1 class="site-title"><?= e($appName) ?></h1>
-      <p class="site-subtitle">All your links, one simple page — free &amp; open.</p>
-      <p class="site-subtitle">Create a clean, customizable link hub in minutes. No paywalls. Own your data.</p>
-    </div>
-  </header>
-  <main class="container">
-    <div class="stack">
-      <nav class="cta-group" aria-label="Sign up and log in">
-        <a href="/signup" class="button" id="cta-signup">Create free account</a>
-        <a href="/login" class="button button--secondary" id="cta-login">Log in</a>
-      </nav>
-      <section class="benefits" aria-labelledby="benefits-heading">
-        <h2 id="benefits-heading" class="sr-only">Benefits</h2>
-        <div class="benefit-cards">
-          <div class="card">
-            <h3>Free &amp; open</h3>
-            <p>No subscriptions. Open ethos. No vendor lock‑in.</p>
-          </div>
-          <div class="card">
-            <h3>Fast &amp; private</h3>
-            <p>Minimal tracking. Privacy‑respectful by default.</p>
-          </div>
-          <div class="card">
-            <h3>Customizable</h3>
-            <p>Your links, your branding, your control.</p>
-          </div>
+<?php
+$headExtra = ob_get_clean();
+require __DIR__ . '/inc/partials/head.php';
+?>
+  <main class="mx-auto max-w-md px-4 pb-8 pt-12 sm:px-5">
+    <header class="mb-10 text-center">
+      <h1 class="text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl"><?= e($appName) ?></h1>
+      <p class="mt-3 text-base text-zinc-600">All your links, one simple page — free &amp; open.</p>
+      <p class="mt-2 text-sm leading-relaxed text-zinc-500">Create a clean, customizable link hub in minutes. No paywalls. Own your data.</p>
+    </header>
+    <nav class="flex flex-col items-stretch gap-3 sm:items-center" aria-label="Sign up and log in">
+      <a href="/signup" class="btn-primary w-full sm:max-w-xs sm:w-auto" id="cta-signup">Create free account</a>
+      <a href="/login" class="btn-secondary w-full sm:max-w-xs sm:w-auto" id="cta-login">Log in</a>
+    </nav>
+    <section class="mt-12" aria-labelledby="benefits-heading">
+      <h2 id="benefits-heading" class="sr-only">Benefits</h2>
+      <div class="grid gap-4 sm:grid-cols-3">
+        <div class="card text-left">
+          <h3 class="mb-1 text-base font-semibold text-zinc-900">Free &amp; open</h3>
+          <p class="muted m-0">No subscriptions. Open ethos. No vendor lock‑in.</p>
         </div>
-      </section>
-      <p class="muted callout">An open alternative to Linktree. Your page, your data.</p>
-    </div>
+        <div class="card text-left">
+          <h3 class="mb-1 text-base font-semibold text-zinc-900">Fast &amp; private</h3>
+          <p class="muted m-0">Minimal tracking. Privacy‑respectful by default.</p>
+        </div>
+        <div class="card text-left">
+          <h3 class="mb-1 text-base font-semibold text-zinc-900">Customizable</h3>
+          <p class="muted m-0">Your links, your branding, your control.</p>
+        </div>
+      </div>
+    </section>
+    <p class="muted mt-10 text-center">An open alternative to Linktree. Your page, your data.</p>
   </main>
-  <footer class="footer">
-    <div class="container">
-      <nav aria-label="Footer">
-        <a href="/about">About</a>
-        <a href="/privacy">Privacy</a>
-        <a href="/terms">Terms</a>
-        <a href="/contact">Contact</a>
-      </nav>
-      <p class="footer-copy">© <?= $year ?> <a href="https://hillwork.us">Hillwork, LLC</a></p>
-    </div>
-  </footer>
+<?php require __DIR__ . '/inc/partials/site_footer.php'; ?>
 </body>
 </html>

@@ -81,24 +81,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 $users = pdo()->query("SELECT id,email,username,display_name,role,mfa_enabled FROM users ORDER BY id DESC")->fetchAll();
-?><!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Users</title><link rel="stylesheet" href="/assets/css/styles.css"></head>
-<body class="theme-light"><main class="container">
-  <header class="admin-header">
-    <h1>Users</h1>
-    <nav>
-      <?php if (($me['role'] ?? '') === 'admin'): ?><a href="/admin/">Dashboard</a><?php endif; ?>
-      <a href="/admin/profile.php">Profile</a>
-      <a href="/admin/links.php">Links</a>
-      <a href="/admin/security/">Security</a>
-      <a href="/admin/users.php">Users</a>
-      <a href="/admin/logout.php" class="danger">Logout</a>
-    </nav>
-  </header>
-  <?php if ($msg): ?><div class="alert"><?= e($msg) ?></div><?php endif; ?>
-  <section class="card">
-    <h2>Create user</h2>
-    <form method="post">
+$pageTitle = 'Users';
+$bodyClass = 'min-h-screen bg-zinc-50 text-zinc-900 antialiased';
+require __DIR__ . '/../inc/partials/head.php';
+?>
+<main class="mx-auto max-w-3xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
+<?php
+$nav_heading = 'Users';
+$nav_current = 'users';
+require __DIR__ . '/../inc/partials/admin_nav.php';
+?>
+  <?php if ($msg): ?><div class="alert mb-6"><?= e($msg) ?></div><?php endif; ?>
+  <section class="card mb-6 form-stack">
+    <h2 class="text-lg font-semibold text-zinc-900">Create user</h2>
+    <form method="post" class="form-stack">
       <?= \App\csrf_field() ?>
       <input type="hidden" name="action" value="create">
       <label>Email<br><input type="email" name="email" required></label>
@@ -111,19 +107,20 @@ $users = pdo()->query("SELECT id,email,username,display_name,role,mfa_enabled FR
         </select>
       </label>
       <label>Temp password<br><input type="text" name="password" required minlength="8"></label>
-      <button type="submit">Create</button>
+      <button type="submit" class="btn-primary">Create</button>
     </form>
   </section>
   <section class="card">
-    <h2>All users</h2>
-    <table class="table">
+    <h2 class="mb-4 text-lg font-semibold text-zinc-900">All users</h2>
+    <div class="overflow-x-auto">
+    <table class="data-table text-sm">
       <thead><tr><th>ID</th><th>Email</th><th>Username</th><th>Name</th><th>Role</th><th>MFA</th><th>Actions</th></tr></thead>
       <tbody>
         <?php foreach ($users as $u): ?>
           <tr>
             <td><?= (int)$u['id'] ?></td>
             <td><?= e($u['email']) ?></td>
-            <td><a target="_blank" href="/@<?= e($u['username']) ?>">@<?= e($u['username']) ?></a></td>
+            <td><a target="_blank" href="/@<?= e($u['username']) ?>" class="font-medium text-teal-700 hover:text-teal-800">@<?= e($u['username']) ?></a></td>
             <td><?= e($u['display_name']) ?></td>
             <td><?= e($u['role']) ?></td>
             <td><?= ((int)$u['mfa_enabled'] === 1) ? 'On' : 'Off' ?></td>
@@ -133,14 +130,14 @@ $users = pdo()->query("SELECT id,email,username,display_name,role,mfa_enabled FR
                 <input type="hidden" name="action" value="reset">
                 <input type="hidden" name="id" value="<?= (int)$u['id'] ?>">
                 <input type="text" name="password" placeholder="New password" minlength="8" required>
-                <button type="submit">Reset</button>
+                <button type="submit" class="btn-primary">Reset</button>
               </form>
               <?php if ((int)$u['id'] !== (int)$me['id']): ?>
               <form method="post" class="inline" onsubmit="return confirm('Delete this user? This removes their links too.');">
                 <?= \App\csrf_field() ?>
                 <input type="hidden" name="action" value="delete">
                 <input type="hidden" name="id" value="<?= (int)$u['id'] ?>">
-                <button class="danger" type="submit">Delete</button>
+                <button class="btn-danger" type="submit">Delete</button>
               </form>
               <?php endif; ?>
             </td>
@@ -148,4 +145,5 @@ $users = pdo()->query("SELECT id,email,username,display_name,role,mfa_enabled FR
         <?php endforeach; ?>
       </tbody>
     </table>
+    </div>
   </section></main></body></html>

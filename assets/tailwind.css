@@ -1,0 +1,254 @@
+/**
+ * Tailwind entry — LinkHill UI (Thankhill / Hillmeet family).
+ * Build: npm run build → public/assets/app.css
+ * SPDX-License-Identifier: MIT
+ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+  body {
+    @apply min-h-full;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-xl border border-zinc-200/90 bg-white p-6 shadow-sm;
+  }
+
+  .btn-primary {
+    @apply inline-flex cursor-pointer items-center justify-center rounded-lg bg-teal-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply inline-flex cursor-pointer items-center justify-center rounded-lg border-2 border-zinc-200 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-800 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-danger,
+  button.danger {
+    @apply inline-flex cursor-pointer items-center justify-center rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50;
+  }
+
+  .input,
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  input[type='url'],
+  input[type='number'],
+  input[type='file'],
+  textarea,
+  select {
+    @apply mt-1 block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2.5 text-sm text-zinc-900 shadow-sm transition-colors placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/30;
+  }
+
+  input[type='color'] {
+    @apply mt-1 h-11 w-full max-w-[4.5rem] cursor-pointer rounded-lg border border-zinc-300 p-1;
+  }
+
+  .label,
+  label {
+    @apply block text-sm font-medium text-zinc-700;
+  }
+
+  .nav-link {
+    @apply inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 no-underline transition-colors hover:bg-zinc-100 hover:text-zinc-900;
+  }
+
+  .nav-link-active {
+    @apply bg-teal-50 text-teal-900 ring-1 ring-inset ring-teal-200/80;
+  }
+
+  .nav-link-danger {
+    @apply text-red-700 hover:bg-red-50 hover:text-red-800;
+  }
+
+  .tab-link {
+    @apply -mb-px inline-flex border-b-2 border-transparent px-4 py-2.5 text-sm font-medium text-zinc-500 no-underline transition-colors hover:border-zinc-200 hover:text-zinc-800;
+  }
+
+  .tab-link-active {
+    @apply border-teal-600 text-teal-800;
+  }
+
+  .alert {
+    @apply rounded-lg border border-lime-200 bg-lime-50 px-4 py-3 text-sm text-lime-950;
+  }
+
+  .alert-error {
+    @apply border-red-200 bg-red-50 text-red-900;
+  }
+
+  .muted {
+    @apply text-sm text-zinc-500;
+  }
+
+  .form-stack > * + * {
+    @apply mt-4;
+  }
+
+  .form-stack label + label {
+    @apply mt-4;
+  }
+
+  .data-table {
+    @apply w-full border-collapse text-left text-sm text-zinc-800;
+  }
+
+  .data-table th {
+    @apply border-b border-zinc-200 bg-zinc-50 px-3 py-2 font-semibold text-zinc-700;
+  }
+
+  .data-table td {
+    @apply border-b border-zinc-100 px-3 py-2 align-middle;
+  }
+
+  .data-table .actions form.inline {
+    @apply mr-2 inline-block;
+  }
+
+  .data-table .actions input[type='text'] {
+    @apply mt-0 inline-block w-auto min-w-[8rem] max-w-[10rem] py-1.5;
+  }
+
+  .data-table .actions .btn-primary,
+  .data-table .actions button:not(.danger) {
+    @apply py-1.5 text-xs;
+  }
+
+  .data-table .actions button.danger {
+    @apply py-1.5 text-xs;
+  }
+
+  /* Public profile: per-link colors via CSS variables from PHP */
+  .profile-link-btn {
+    @apply flex w-full items-center justify-center gap-3 rounded-xl border border-black/5 px-5 py-3.5 text-center text-sm font-semibold no-underline shadow-sm transition hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2;
+    background-color: var(--button-bg, theme('colors.teal.600'));
+    color: var(--button-text, #fff);
+  }
+
+  .profile-link-btn:hover {
+    background-color: var(--button-hover, theme('colors.teal.700'));
+    color: var(--button-text, #fff);
+    @apply no-underline;
+  }
+
+  .profile-link-card {
+    @apply block rounded-xl border p-5 text-left no-underline shadow-sm transition hover:-translate-y-px hover:shadow-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2;
+    background-color: var(--card-bg, theme('colors.white'));
+    border-color: var(--border, theme('colors.zinc.200'));
+    color: inherit;
+  }
+
+  .profile-link-card h3 {
+    @apply mb-1 text-base font-semibold;
+  }
+
+  .profile-link-card p {
+    @apply m-0 text-sm;
+    color: var(--muted, theme('colors.zinc.600'));
+  }
+
+  .profile-link-card:hover {
+    @apply no-underline;
+  }
+
+  .profile-link-btn .icon svg {
+    @apply h-5 w-5 shrink-0;
+    fill: currentColor;
+  }
+
+  /* Passkeys list (also built in webauthn.js) */
+  .passkey-item {
+    @apply flex flex-wrap items-start justify-between gap-3 border-b border-dashed border-zinc-200 py-3 last:border-b-0;
+  }
+
+  .passkey-item .cred-id {
+    @apply ml-1 font-mono text-xs text-zinc-500;
+  }
+
+  .passkey-item .actions {
+    @apply flex shrink-0 gap-2;
+  }
+
+  .passkey-item .actions button {
+    @apply rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-800 shadow-sm hover:bg-zinc-50;
+  }
+
+  .passkey-item .actions button.danger {
+    @apply border-red-200 bg-red-600 text-white hover:bg-red-700;
+  }
+
+  .passkey-add {
+    @apply btn-primary;
+  }
+
+  /* Admin links editor rows */
+  .link-item {
+    @apply rounded-xl border border-zinc-200 bg-zinc-50/80 p-4 shadow-sm;
+  }
+
+  .link-item .drag {
+    @apply shrink-0 cursor-grab select-none pr-1 pt-2 text-zinc-400 active:cursor-grabbing;
+  }
+
+  .link-item__row {
+    @apply flex gap-3;
+  }
+
+  .link-item__fields {
+    @apply flex min-w-0 flex-1 flex-col gap-3;
+  }
+
+  .link-item__label {
+    @apply m-0 text-xs font-medium text-zinc-500;
+  }
+
+  .link-item__meta {
+    @apply mt-1 flex flex-wrap items-center justify-between gap-3;
+  }
+
+  .link-item__meta-left {
+    @apply flex flex-wrap items-center gap-3;
+  }
+
+  .link-item__actions {
+    @apply ml-auto flex gap-2;
+  }
+
+  .link-item__meta-label {
+    @apply m-0 inline-flex items-center gap-2 text-xs text-zinc-500;
+  }
+
+  .link-item__meta-label .color {
+    @apply h-8 w-10 cursor-pointer rounded border border-zinc-200 p-0.5;
+  }
+
+  .link-item__meta-label .icon {
+    @apply min-w-[6rem] rounded-lg border border-zinc-300 py-1.5 text-sm;
+  }
+
+  .link-item--heading .link-item__heading-row {
+    @apply flex w-full flex-wrap items-end gap-3;
+  }
+
+  .link-item--heading .link-item__heading-row .link-item__label {
+    @apply min-w-[12rem] flex-1;
+  }
+
+  .link-item--heading .link-item__heading-row .link-item__actions {
+    @apply ml-auto mt-0;
+  }
+
+  .link-item .save {
+    @apply btn-primary py-2 text-xs;
+  }
+
+  .link-item .delete {
+    @apply btn-danger py-2 text-xs;
+  }
+}

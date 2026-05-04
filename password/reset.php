@@ -55,21 +55,25 @@ if ($token !== '' && $resetData === null && $_SERVER['REQUEST_METHOD'] !== 'POST
     $err = 'This reset link is invalid or has expired.';
 }
 $showForm = $resetData !== null && !$done;
-?><!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Set new password · <?= e(config()['app_name']) ?></title><link rel="stylesheet" href="/assets/css/styles.css"></head>
-<body class="theme-light"><main class="container">
-  <h1>Set new password</h1>
+$pageTitle = 'Set new password · ' . e(config()['app_name']);
+$bodyClass = 'min-h-screen bg-zinc-50 text-zinc-900 antialiased';
+require __DIR__ . '/../inc/partials/head.php';
+?>
+<main class="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-4 py-12 sm:px-5">
+  <div class="card">
+  <h1 class="mb-4 text-2xl font-semibold tracking-tight text-zinc-900">Set new password</h1>
   <?php if ($err && !$showForm): ?>
-    <div class="alert alert-error"><?= e($err) ?></div>
-    <p><a href="/password/forgot.php">Request a new link</a> or <a href="/admin/login.php">Sign in</a>.</p>
+    <div class="alert alert-error mb-4"><?= e($err) ?></div>
+    <p class="text-sm text-zinc-600"><a href="/password/forgot.php" class="font-medium text-teal-700 hover:text-teal-800">Request a new link</a> or <a href="/admin/login.php" class="font-medium text-teal-700 hover:text-teal-800">Sign in</a>.</p>
   <?php elseif ($showForm): ?>
-    <?php if ($err): ?><div class="alert alert-error"><?= e($err) ?></div><?php endif; ?>
-    <form method="post">
+    <?php if ($err): ?><div class="alert alert-error mb-4"><?= e($err) ?></div><?php endif; ?>
+    <form method="post" class="form-stack">
       <?= csrf_field() ?>
       <input type="hidden" name="token" value="<?= e($token) ?>">
       <label>New password (min 8 characters)<br><input type="password" name="password" required minlength="8" autocomplete="new-password"></label>
       <label>Confirm password<br><input type="password" name="password_confirm" required minlength="8" autocomplete="new-password"></label>
-      <button type="submit">Update password</button>
+      <button type="submit" class="btn-primary w-full sm:w-auto">Update password</button>
     </form>
   <?php endif; ?>
+  </div>
 </main></body></html>

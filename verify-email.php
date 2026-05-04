@@ -28,13 +28,17 @@ if ($token !== '' && users_have_email_verified()) {
     $error = 'Verification is not available. Please contact support.';
 }
 $appName = e(config()['app_name'] ?? 'Hillwork');
-?><!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Verify email · <?= $appName ?></title><link rel="stylesheet" href="/assets/css/styles.css"></head>
-<body class="theme-light"><main class="container">
-  <h1>Verify email</h1>
-  <?php if ($error): ?><div class="alert alert-error"><?= $error ?></div><?php endif; ?>
+$pageTitle = 'Verify email · ' . $appName;
+$bodyClass = 'min-h-screen bg-zinc-50 text-zinc-900 antialiased';
+require __DIR__ . '/inc/partials/head.php';
+?>
+<main class="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-4 py-12 sm:px-5">
+  <div class="card">
+  <h1 class="mb-4 text-2xl font-semibold tracking-tight text-zinc-900">Verify email</h1>
+  <?php if ($error): ?><div class="alert alert-error mb-4"><?= e($error) ?></div><?php endif; ?>
   <?php if (!$verified): ?>
-    <p><a href="/login">Log in</a></p>
-    <p><a href="/">Home</a></p>
+    <p class="text-sm"><a href="/login" class="font-medium text-teal-700 hover:text-teal-800">Log in</a></p>
+    <p class="mt-2 text-sm"><a href="/" class="font-medium text-teal-700 hover:text-teal-800">Home</a></p>
   <?php endif; ?>
+  </div>
 </main></body></html>

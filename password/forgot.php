@@ -48,15 +48,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 $success = false;
-?><!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Forgot password · <?= e(config()['app_name']) ?></title><link rel="stylesheet" href="/assets/css/styles.css"></head>
-<body class="theme-light"><main class="container">
-  <h1>Forgot password</h1>
-  <?php if ($msg): ?><div class="alert alert-error"><?= e($msg) ?></div><?php endif; ?>
-  <form method="post">
+$pageTitle = 'Forgot password · ' . e(config()['app_name']);
+$bodyClass = 'min-h-screen bg-zinc-50 text-zinc-900 antialiased';
+require __DIR__ . '/../inc/partials/head.php';
+?>
+<main class="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-4 py-12 sm:px-5">
+  <div class="card">
+  <h1 class="mb-4 text-2xl font-semibold tracking-tight text-zinc-900">Forgot password</h1>
+  <?php if ($msg): ?><div class="alert alert-error mb-4"><?= e($msg) ?></div><?php endif; ?>
+  <form method="post" class="form-stack">
     <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">
     <label>Email<br><input type="email" name="email" required value="<?= e($_POST['email'] ?? '') ?>"></label>
-    <button type="submit">Send reset link</button>
+    <button type="submit" class="btn-primary w-full sm:w-auto">Send reset link</button>
   </form>
-  <p><a href="/admin/login.php">Back to sign in</a></p>
+  <p class="mt-6 text-sm"><a href="/admin/login.php" class="font-medium text-teal-700 hover:text-teal-800">Back to sign in</a></p>
+  </div>
 </main></body></html>

@@ -68,23 +68,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 $pending = isset($_SESSION['pending_mfa_user_id']);
 $verified = isset($_GET['verified']) && $_GET['verified'] === '1';
-?><!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Login · <?= e(config()['app_name']) ?></title><link rel="stylesheet" href="/assets/css/styles.css"></head>
-<body class="theme-light"><main class="container">
-  <h1>Sign in</h1>
-  <?php if ($verified): ?><div class="alert">Your email is verified. You can sign in below.</div><?php endif; ?>
-  <?php if ($err): ?><div class="alert alert-error"><?= e($err) ?></div><?php endif; ?>
+$pageTitle = 'Login · ' . e(config()['app_name']);
+$bodyClass = 'min-h-screen bg-zinc-50 text-zinc-900 antialiased';
+require __DIR__ . '/../inc/partials/head.php';
+?>
+<main class="mx-auto flex min-h-[80vh] max-w-md flex-col justify-center px-4 py-12 sm:px-5">
+  <div class="card">
+  <h1 class="mb-6 text-2xl font-semibold tracking-tight text-zinc-900">Sign in</h1>
+  <?php if ($verified): ?><div class="alert mb-4">Your email is verified. You can sign in below.</div><?php endif; ?>
+  <?php if ($err): ?><div class="alert alert-error mb-4"><?= e($err) ?></div><?php endif; ?>
   <?php if (!$pending): ?>
-  <form method="post" id="login-form">
+  <form method="post" id="login-form" class="form-stack">
     <?= \App\csrf_field() ?>
     <label>Email<br><input type="email" name="email" id="login-email" required></label>
     <label>Password<br><input type="password" name="password" required></label>
-    <button type="submit">Continue</button>
+    <button type="submit" class="btn-primary w-full sm:w-auto">Continue</button>
   </form>
-  <p style="margin-top:16px;"><a href="/password/forgot.php">Forgot password?</a></p>
+  <p class="mt-4 text-sm"><a href="/password/forgot.php" class="font-medium text-teal-700 hover:text-teal-800">Forgot password?</a></p>
   <?php if ($passkeys_available): ?>
-  <p style="margin-top:12px;">
-    <button type="button" id="passkey-btn" style="display:none;">Sign in with a passkey</button>
+  <p class="mt-3">
+    <button type="button" id="passkey-btn" class="btn-secondary" style="display:none">Sign in with a passkey</button>
   </p>
   <?php endif; ?>
   <meta name="csrf-token" content="<?= e(\App\csrf_token()) ?>">
@@ -99,12 +102,13 @@ $verified = isset($_GET['verified']) && $_GET['verified'] === '1';
     });
   </script>
   <?php else: ?>
-  <form method="post">
+  <form method="post" class="form-stack">
     <?= \App\csrf_field() ?>
-    <p>Enter your 6‑digit authentication code.</p>
+    <p class="text-sm text-zinc-600">Enter your 6‑digit authentication code.</p>
     <label>Authenticator code<br><input type="text" name="totp_code" inputmode="numeric" pattern="[0-9]{6}" required></label>
-    <button type="submit">Verify</button>
+    <button type="submit" class="btn-primary">Verify</button>
   </form>
   <?php endif; ?>
-  <p style="margin-top:16px;"><a href="/">Home</a></p>
+  <p class="mt-6 text-sm"><a href="/" class="font-medium text-teal-700 hover:text-teal-800">Home</a></p>
+  </div>
 </main></body></html>

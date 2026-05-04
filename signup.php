@@ -77,33 +77,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 $csrf = csrf_token();
 $appName = e(config()['app_name'] ?? 'Hillwork');
-?><!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Create account · <?= $appName ?></title><link rel="stylesheet" href="/assets/css/styles.css"></head>
-<body class="theme-light"><main class="container">
-  <h1>Create free account</h1>
+$pageTitle = 'Create account · ' . $appName;
+$bodyClass = 'min-h-screen bg-zinc-50 text-zinc-900 antialiased';
+require __DIR__ . '/inc/partials/head.php';
+?>
+<main class="mx-auto flex min-h-[80vh] max-w-md flex-col justify-center px-4 py-12 sm:px-5">
+  <div class="card">
+  <h1 class="mb-6 text-2xl font-semibold tracking-tight text-zinc-900">Create free account</h1>
   <?php if ($success): ?>
     <div class="alert">
       <?php if ($verificationSent): ?>
-        <p><strong>Check your email to verify your account.</strong></p>
-        <p>We sent a verification link to <?= e($_POST['email'] ?? '') ?>. Click the link to activate your account, then sign in.</p>
+        <p class="font-semibold">Check your email to verify your account.</p>
+        <p class="mt-2 text-sm">We sent a verification link to <?= e($_POST['email'] ?? '') ?>. Click the link to activate your account, then sign in.</p>
       <?php else: ?>
-        <p><strong>Account created.</strong></p>
-        <p>You can now <a href="/login">log in</a>.</p>
+        <p class="font-semibold">Account created.</p>
+        <p class="mt-2 text-sm">You can now <a href="/login" class="font-medium text-teal-800 underline">log in</a>.</p>
       <?php endif; ?>
     </div>
-    <p><a href="/login">Log in</a></p>
+    <p class="mt-4 text-sm"><a href="/login" class="font-medium text-teal-700 hover:text-teal-800">Log in</a></p>
   <?php else: ?>
-    <?php if ($msg): ?><div class="alert alert-error"><?= e($msg) ?></div><?php endif; ?>
-    <form method="post">
+    <?php if ($msg): ?><div class="alert alert-error mb-4"><?= e($msg) ?></div><?php endif; ?>
+    <form method="post" class="form-stack">
       <?= csrf_field() ?>
       <label>Email<br><input type="email" name="email" required value="<?= e($_POST['email'] ?? '') ?>"></label>
       <label>Username (for your page URL)<br><input type="text" name="username" required minlength="3" maxlength="32" pattern="[a-z0-9_]+" title="Letters, numbers, underscores only" value="<?= e($_POST['username'] ?? '') ?>"></label>
       <label>Display name<br><input type="text" name="display_name" required maxlength="80" value="<?= e($_POST['display_name'] ?? '') ?>"></label>
       <label>Password (min 8 characters)<br><input type="password" name="password" required minlength="8"></label>
       <label>Confirm password<br><input type="password" name="password_confirm" required minlength="8"></label>
-      <button type="submit">Create account</button>
+      <button type="submit" class="btn-primary w-full sm:w-auto">Create account</button>
     </form>
-    <p><a href="/login">Already have an account? Log in</a></p>
+    <p class="mt-4 text-sm"><a href="/login" class="font-medium text-teal-700 hover:text-teal-800">Already have an account? Log in</a></p>
   <?php endif; ?>
-  <p style="margin-top:16px;"><a href="/">Home</a></p>
+  <p class="mt-6 text-sm"><a href="/" class="font-medium text-teal-700 hover:text-teal-800">Home</a></p>
+  </div>
 </main></body></html>

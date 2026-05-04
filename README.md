@@ -45,6 +45,25 @@ Visitors click a link on your page and are redirected through your site (optiona
 - **MySQL** (create database and user in your control panel)
 - **Writable directories:** `storage/sessions`, `storage/rate_limit`, `storage/` (for generated `sites.xml`)
 - **HTTPS** recommended (required for passkeys in production)
+- **Node.js 18+** (only on your dev machine) if you change HTML/PHP classes and need to rebuild the Tailwind bundle
+
+---
+
+## Frontend (Tailwind CSS)
+
+The site UI is built with **Tailwind CSS**. The production stylesheet is **`public/assets/app.css`** (committed to the repo). PHP templates link to it as **`/public/assets/app.css`** — your web server document root should be the **project root** (the folder that contains `public/`, `admin/`, `index.php`, etc.) so that URL resolves. If your host serves only a subdirectory as the docroot, adjust the link in `inc/partials/head.php` or map `/public` accordingly.
+
+- **`assets/tailwind.css`** — source: `@tailwind` layers + shared component classes (`.card`, `.btn-primary`, …).
+- **`tailwind.config.js`** — `content` globs scan PHP and JS for class names (purge unused CSS on build).
+- **`postcss.config.js`** — Tailwind, Autoprefixer, and **cssnano** when `NODE_ENV=production`.
+
+Commands (run from the project root):
+
+```bash
+npm install          # install devDependencies (one-time, or after pulling package.json changes)
+npm run build        # compile minified public/assets/app.css (run before commit if you changed templates or tailwind.css)
+npm run dev          # watch tailwind.css and rebuild public/assets/app.css on save
+```
 
 ---
 
