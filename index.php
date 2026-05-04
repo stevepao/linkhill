@@ -76,9 +76,9 @@ if ($u !== null) {
     require __DIR__ . '/inc/partials/head.php';
 ?>
   <main class="mx-auto max-w-md px-4 pb-16 pt-8 sm:px-5">
-    <header class="mb-8 rounded-xl border border-zinc-200/90 bg-white p-6 text-center shadow-sm">
+    <header class="mb-8 bg-transparent px-2 py-4 text-center">
       <?php if (!empty($user['avatar_path'])): ?>
-        <img class="mx-auto mb-4 h-24 w-24 rounded-full object-cover ring-2 ring-zinc-100 sm:h-28 sm:w-28" src="<?= e($user['avatar_path']) ?>" alt="">
+        <img class="mx-auto mb-4 h-24 w-24 rounded-full object-cover ring-2 ring-zinc-200/40 sm:h-28 sm:w-28 <?= $theme === 'dark' ? 'ring-zinc-600/50' : '' ?>" src="<?= e($user['avatar_path']) ?>" alt="">
       <?php endif; ?>
       <h1 class="text-2xl font-semibold tracking-tight text-zinc-900 <?= $theme === 'dark' ? '!text-zinc-50' : '' ?>"><?= e($user['display_name']) ?></h1>
       <?php if (!empty($user['bio'])): ?>
