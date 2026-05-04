@@ -25,15 +25,16 @@ $pageTitle = 'Links';
 $bodyClass = 'min-h-screen bg-zinc-50 text-zinc-900 antialiased';
 require __DIR__ . '/../inc/partials/head.php';
 ?>
-<main class="mx-auto max-w-3xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
+<main class="admin-app mx-auto max-w-3xl px-4 pb-20 pt-8 sm:px-6 lg:px-8">
 <?php
 $nav_heading = 'Links';
 $nav_current = 'links';
 require __DIR__ . '/../inc/partials/admin_nav.php';
 ?>
-  <section class="card mb-6">
-    <h2 class="mb-4 text-lg font-semibold text-zinc-900">Add link</h2>
-    <form id="addForm">
+  <div class="admin-content">
+  <section class="card">
+    <h2 class="mb-4 border-b border-zinc-100 pb-3 text-lg font-semibold text-zinc-900">Add link</h2>
+    <form id="addForm" class="form-stack">
       <input type="hidden" name="_token" value="<?= e($csrf) ?>">
       <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <label>Title<br><input type="text" name="title" required maxlength="80"></label>
@@ -55,9 +56,9 @@ require __DIR__ . '/../inc/partials/admin_nav.php';
       </div>
     </form>
   </section>
-  <section class="card mb-6">
-    <h2 class="mb-4 text-lg font-semibold text-zinc-900">Add heading</h2>
-    <form id="addHeadingForm">
+  <section class="card">
+    <h2 class="mb-4 border-b border-zinc-100 pb-3 text-lg font-semibold text-zinc-900">Add heading</h2>
+    <form id="addHeadingForm" class="form-stack">
       <input type="hidden" name="_token" value="<?= e($csrf) ?>">
       <input type="hidden" name="entry_type" value="heading">
       <div class="flex flex-wrap items-end gap-3">
@@ -67,7 +68,7 @@ require __DIR__ . '/../inc/partials/admin_nav.php';
     </form>
   </section>
   <section class="card">
-    <h2 class="mb-4 text-lg font-semibold text-zinc-900">Your entries</h2>
+    <h2 class="mb-4 border-b border-zinc-100 pb-3 text-lg font-semibold text-zinc-900">Your entries</h2>
     <ul id="linkList" class="m-0 flex list-none flex-col gap-3 p-0" data-csrf="<?= e($csrf) ?>">
       <?php foreach ($links as $l): ?>
         <?php $isHeading = ($l['entry_type'] ?? 'link') === 'heading'; ?>
@@ -84,7 +85,7 @@ require __DIR__ . '/../inc/partials/admin_nav.php';
                   </div>
                 </div>
               <?php else: ?>
-                <div class="grid">
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <label class="link-item__label">Title<br><input class="title" type="text" value="<?= e($l['title']) ?>" maxlength="80" placeholder="Link title"></label>
                   <label class="link-item__label">URL<br><input class="url" type="url" value="<?= e($l['url']) ?>" placeholder="https://..."></label>
                 </div>
@@ -105,7 +106,9 @@ require __DIR__ . '/../inc/partials/admin_nav.php';
         </li>
       <?php endforeach; ?>
     </ul>
-  </section></main>
+  </section>
+  </div>
+</main>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script>
 const list = document.getElementById('linkList');

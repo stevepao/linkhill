@@ -85,16 +85,17 @@ $pageTitle = 'Users';
 $bodyClass = 'min-h-screen bg-zinc-50 text-zinc-900 antialiased';
 require __DIR__ . '/../inc/partials/head.php';
 ?>
-<main class="mx-auto max-w-3xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
+<main class="admin-app mx-auto max-w-3xl px-4 pb-20 pt-8 sm:px-6 lg:px-8">
 <?php
 $nav_heading = 'Users';
 $nav_current = 'users';
 require __DIR__ . '/../inc/partials/admin_nav.php';
 ?>
-  <?php if ($msg): ?><div class="alert mb-6"><?= e($msg) ?></div><?php endif; ?>
-  <section class="card mb-6 form-stack">
-    <h2 class="text-lg font-semibold text-zinc-900">Create user</h2>
-    <form method="post" class="form-stack">
+  <div class="admin-content">
+  <?php if ($msg): ?><div class="alert"><?= e($msg) ?></div><?php endif; ?>
+  <section class="card form-stack">
+    <h2 class="border-b border-zinc-100 pb-3 text-lg font-semibold text-zinc-900">Create user</h2>
+    <form method="post" class="form-stack pt-1">
       <?= \App\csrf_field() ?>
       <input type="hidden" name="action" value="create">
       <label>Email<br><input type="email" name="email" required></label>
@@ -111,7 +112,7 @@ require __DIR__ . '/../inc/partials/admin_nav.php';
     </form>
   </section>
   <section class="card">
-    <h2 class="mb-4 text-lg font-semibold text-zinc-900">All users</h2>
+    <h2 class="mb-4 border-b border-zinc-100 pb-3 text-lg font-semibold text-zinc-900">All users</h2>
     <div class="overflow-x-auto">
     <table class="data-table text-sm">
       <thead><tr><th>ID</th><th>Email</th><th>Username</th><th>Name</th><th>Role</th><th>MFA</th><th>Actions</th></tr></thead>
@@ -146,4 +147,6 @@ require __DIR__ . '/../inc/partials/admin_nav.php';
       </tbody>
     </table>
     </div>
-  </section></main></body></html>
+  </section>
+  </div>
+</main></body></html>

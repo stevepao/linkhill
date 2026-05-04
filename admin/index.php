@@ -26,12 +26,13 @@ $pageTitle = 'Dashboard';
 $bodyClass = 'min-h-screen bg-zinc-50 text-zinc-900 antialiased';
 require __DIR__ . '/../inc/partials/head.php';
 ?>
-<main class="mx-auto max-w-3xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
+<main class="admin-app mx-auto max-w-3xl px-4 pb-20 pt-8 sm:px-6 lg:px-8">
 <?php
 $nav_heading = 'Dashboard';
 $nav_current = 'dashboard';
 require __DIR__ . '/../inc/partials/admin_nav.php';
 ?>
+  <div class="admin-content">
   <?php if ($isAdmin): ?>
     <div class="grid gap-4 sm:grid-cols-2">
       <div class="card text-center">
@@ -48,4 +49,5 @@ require __DIR__ . '/../inc/partials/admin_nav.php';
       <p class="text-sm text-zinc-700">Welcome, <?= e($u['name']) ?>. Use the links above to manage your profile.</p>
     </div>
   <?php endif; ?>
+  </div>
 </main></body></html>

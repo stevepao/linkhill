@@ -18,7 +18,12 @@
 
 @layer components {
   .card {
-    @apply rounded-xl border border-zinc-200/90 bg-white p-6 shadow-sm;
+    @apply rounded-xl border border-zinc-200/90 bg-white p-6 shadow-sm ring-1 ring-zinc-200/40;
+  }
+
+  /* Admin: vertical rhythm between cards/sections */
+  .admin-content {
+    @apply space-y-6;
   }
 
   .btn-primary {
@@ -55,23 +60,34 @@
     @apply block text-sm font-medium text-zinc-700;
   }
 
-  .nav-link {
-    @apply inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 no-underline transition-colors hover:bg-zinc-100 hover:text-zinc-900;
+  /* Admin forms: quieter field labels */
+  .admin-app label {
+    @apply text-xs font-normal normal-case tracking-normal text-zinc-500;
   }
 
-  .nav-link-active {
-    @apply bg-teal-50 text-teal-900 ring-1 ring-inset ring-teal-200/80;
+  .help-text {
+    @apply mt-1.5 text-xs font-normal leading-relaxed text-zinc-500;
   }
 
-  .nav-link-danger {
-    @apply text-red-700 hover:bg-red-50 hover:text-red-800;
+  /* Primary admin nav (Profile / Links / Security …) */
+  .tab {
+    @apply inline-flex items-center rounded-lg px-3.5 py-2 text-sm font-medium text-zinc-600 no-underline transition-colors duration-150 hover:bg-zinc-200/50 hover:text-zinc-900;
   }
 
-  .tab-link {
+  .tab-active {
+    @apply bg-white font-semibold text-teal-800 shadow-sm ring-1 ring-zinc-200/80 hover:bg-white hover:text-teal-900;
+  }
+
+  .admin-logout {
+    @apply inline-flex shrink-0 items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold text-red-700 no-underline transition-colors hover:bg-red-50 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500/40 focus:ring-offset-2;
+  }
+
+  /* Secondary tabs (e.g. Security → Password / Two-step / Passkeys) */
+  .subtab {
     @apply -mb-px inline-flex border-b-2 border-transparent px-4 py-2.5 text-sm font-medium text-zinc-500 no-underline transition-colors hover:border-zinc-200 hover:text-zinc-800;
   }
 
-  .tab-link-active {
+  .subtab-active {
     @apply border-teal-600 text-teal-800;
   }
 

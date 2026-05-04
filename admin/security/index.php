@@ -90,23 +90,24 @@ $pageTitle = 'Security';
 $bodyClass = 'min-h-screen bg-zinc-50 text-zinc-900 antialiased';
 require __DIR__ . '/../../inc/partials/head.php';
 ?>
-<main class="mx-auto max-w-3xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
+<main class="admin-app mx-auto max-w-3xl px-4 pb-20 pt-8 sm:px-6 lg:px-8">
 <?php
 $nav_heading = 'Security';
 $nav_current = 'security';
 require __DIR__ . '/../../inc/partials/admin_nav.php';
 ?>
+  <div class="admin-content">
   <nav class="mb-6 flex flex-wrap gap-0 border-b border-zinc-200" role="tablist" aria-label="Security sections">
-    <a href="/admin/security/?tab=password" class="tab-link<?= $tab === 'password' ? ' tab-link-active' : '' ?>" role="tab">Password</a>
-    <a href="/admin/security/?tab=totp" class="tab-link<?= $tab === 'totp' ? ' tab-link-active' : '' ?>" role="tab">Two‑step verification</a>
-    <a href="/admin/security/?tab=passkeys" class="tab-link<?= $tab === 'passkeys' ? ' tab-link-active' : '' ?>" role="tab">Passkeys</a>
+    <a href="/admin/security/?tab=password" class="<?= $tab === 'password' ? 'subtab subtab-active' : 'subtab' ?>" role="tab">Password</a>
+    <a href="/admin/security/?tab=totp" class="<?= $tab === 'totp' ? 'subtab subtab-active' : 'subtab' ?>" role="tab">Two‑step verification</a>
+    <a href="/admin/security/?tab=passkeys" class="<?= $tab === 'passkeys' ? 'subtab subtab-active' : 'subtab' ?>" role="tab">Passkeys</a>
   </nav>
-  <?php if ($msg): ?><div class="alert mb-6"><?= e($msg) ?></div><?php endif; ?>
+  <?php if ($msg): ?><div class="alert"><?= e($msg) ?></div><?php endif; ?>
 
   <?php if ($tab === 'password'): ?>
   <section class="card form-stack">
-    <h2 class="text-lg font-semibold text-zinc-900">Change password</h2>
-    <p class="muted text-sm leading-relaxed">Requires your current password. After changing, all other sessions will be signed out.</p>
+    <h2 class="border-b border-zinc-100 pb-3 text-lg font-semibold text-zinc-900">Change password</h2>
+    <p class="help-text">Requires your current password. After changing, all other sessions will be signed out.</p>
     <form method="post" class="form-stack">
       <input type="hidden" name="_token" value="<?= e($csrf) ?>">
       <input type="hidden" name="change_password" value="1">
@@ -121,8 +122,8 @@ require __DIR__ . '/../../inc/partials/admin_nav.php';
 
   <?php if ($tab === 'totp'): ?>
   <section class="card form-stack">
-    <h2 class="text-lg font-semibold text-zinc-900">Two‑step verification (TOTP)</h2>
-    <p class="muted text-sm leading-relaxed">Use an authenticator app (e.g. Google Authenticator, Authy) for a second factor when signing in.</p>
+    <h2 class="border-b border-zinc-100 pb-3 text-lg font-semibold text-zinc-900">Two‑step verification (TOTP)</h2>
+    <p class="help-text">Use an authenticator app (e.g. Google Authenticator, Authy) for a second factor when signing in.</p>
     <?php if ((int)$u['mfa_enabled'] === 1): ?>
       <p class="text-sm text-zinc-700">Two-step verification is <strong>enabled</strong>.</p>
       <form method="post" class="form-stack">
@@ -132,29 +133,19 @@ require __DIR__ . '/../../inc/partials/admin_nav.php';
       </form>
     <?php else: ?>
       <?php if (empty($_SESSION['mfa_tmp_secret'])): ?>
-        <form method="post">
+        <form method="post" class="form-stack">
           <input type="hidden" name="_token" value="<?= e($csrf) ?>">
           <button name="enable_totp" value="1" type="submit" class="btn-primary">Enable two‑step verification</button>
         </form>
       <?php else: ?>
         <p class="text-sm text-zinc-700">Scan this QR code in your authenticator app, then enter the code below.</p>
-        <div id="qr" class="rounded-lg border border-zinc-200 bg-white p-2" style="width:180px;height:180px;"></div>
-        <p class="muted text-sm">Or enter this secret manually: <code class="rounded bg-zinc-100 px-1.5 py-0.5 text-xs text-zinc-800"><?= e($_SESSION['mfa_tmp_secret']) ?></code></p>
+        <div id="qr" class="h-[180px] w-[180px] rounded-lg border border-zinc-200 bg-white p-2"></div>
+        <p class="help-text">Or enter this secret manually: <code class="rounded bg-zinc-100 px-1.5 py-0.5 text-xs text-zinc-800"><?= e($_SESSION['mfa_tmp_secret']) ?></code></p>
         <form method="post" class="form-stack">
           <input type="hidden" name="_token" value="<?= e($csrf) ?>">
           <label>Enter code from app<br><input name="totp_code" inputmode="numeric" pattern="[0-9]{6}" required></label>
           <button name="verify_totp" value="1" type="submit" class="btn-primary">Verify &amp; enable</button>
         </form>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
-        <script>
-          document.addEventListener('DOMContentLoaded', function() {
-            var el = document.getElementById('qr');
-            var uri = <?= json_encode($uri, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
-            if (el && uri && typeof QRCode !== 'undefined') {
-              new QRCode(el, { text: uri, width: 180, height: 180 });
-            }
-          });
-        </script>
       <?php endif; ?>
     <?php endif; ?>
   </section>
@@ -162,9 +153,9 @@ require __DIR__ . '/../../inc/partials/admin_nav.php';
 
   <?php if ($tab === 'passkeys'): ?>
   <section class="card form-stack">
-    <h2 class="text-lg font-semibold text-zinc-900">Passkeys</h2>
-    <p class="muted text-sm leading-relaxed">Passkeys are phishing-resistant and fast. Sign in with your device (fingerprint, Face ID, or security key) instead of typing a password.</p>
-    <p class="muted text-sm">Compatible with current Chrome, Safari, Edge, and mobile devices. <a href="https://support.apple.com/HT213305" target="_blank" rel="noopener" class="font-medium text-teal-700 hover:text-teal-800">Learn more</a>.</p>
+    <h2 class="border-b border-zinc-100 pb-3 text-lg font-semibold text-zinc-900">Passkeys</h2>
+    <p class="help-text">Passkeys are phishing-resistant and fast. Sign in with your device (fingerprint, Face ID, or security key) instead of typing a password.</p>
+    <p class="help-text">Compatible with current Chrome, Safari, Edge, and mobile devices. <a href="https://support.apple.com/HT213305" target="_blank" rel="noopener" class="font-medium text-teal-700 hover:text-teal-800">Learn more</a>.</p>
     <?php if (!webauthn_available()): ?>
       <div class="alert alert-error">
         <p><strong>Passkeys are not available on this server.</strong> They require Composer dependencies. Run <code class="text-xs">composer install</code> locally, then upload the entire <code class="text-xs">vendor/</code> folder to the server (e.g. via FTP/SFTP). See README for IONOS deployment.</p>
@@ -172,18 +163,34 @@ require __DIR__ . '/../../inc/partials/admin_nav.php';
     <?php else: ?>
       <div id="passkeys-list"></div>
       <p><button type="button" id="add-passkey-btn" class="passkey-add">Add passkey</button></p>
-      <p id="passkey-hint" class="muted hidden">Passkeys require a supported browser (e.g. Chrome, Safari, Edge).</p>
+      <p id="passkey-hint" class="help-text hidden">Passkeys require a supported browser (e.g. Chrome, Safari, Edge).</p>
     <?php endif; ?>
   </section>
-  <meta name="csrf-token" content="<?= e($csrf) ?>">
-  <meta name="app-base-path" content="<?= e(rtrim(parse_url(\App\base_url(), PHP_URL_PATH) ?: '', '/')) ?>">
-  <script src="/assets/js/webauthn.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      if (typeof window.WebAuthnHelper !== 'undefined' && document.getElementById('passkeys-list') && document.getElementById('add-passkey-btn')) {
-        window.WebAuthnHelper.initSecurityPage(document.getElementById('passkeys-list'), document.getElementById('add-passkey-btn'), document.getElementById('passkey-hint'));
-      }
-    });
-  </script>
   <?php endif; ?>
-</main></body></html>
+  </div>
+</main>
+<?php if ($tab === 'totp' && !empty($_SESSION['mfa_tmp_secret'])): ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var el = document.getElementById('qr');
+    var uri = <?= json_encode($uri, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+    if (el && uri && typeof QRCode !== 'undefined') {
+      new QRCode(el, { text: uri, width: 180, height: 180 });
+    }
+  });
+</script>
+<?php endif; ?>
+<?php if ($tab === 'passkeys' && webauthn_available()): ?>
+<meta name="csrf-token" content="<?= e($csrf) ?>">
+<meta name="app-base-path" content="<?= e(rtrim(parse_url(\App\base_url(), PHP_URL_PATH) ?: '', '/')) ?>">
+<script src="/assets/js/webauthn.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.WebAuthnHelper !== 'undefined' && document.getElementById('passkeys-list') && document.getElementById('add-passkey-btn')) {
+      window.WebAuthnHelper.initSecurityPage(document.getElementById('passkeys-list'), document.getElementById('add-passkey-btn'), document.getElementById('passkey-hint'));
+    }
+  });
+</script>
+<?php endif; ?>
+</body></html>

@@ -63,41 +63,51 @@ $pageTitle = 'Profile';
 $bodyClass = 'min-h-screen bg-zinc-50 text-zinc-900 antialiased';
 require __DIR__ . '/../inc/partials/head.php';
 ?>
-<main class="mx-auto max-w-3xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
+<main class="admin-app mx-auto max-w-3xl px-4 pb-20 pt-8 sm:px-6 lg:px-8">
 <?php
 $nav_heading = 'Profile';
 $nav_current = 'profile';
 require __DIR__ . '/../inc/partials/admin_nav.php';
 ?>
-  <?php if ($msg): ?><div class="alert mb-6"><?= e($msg) ?></div><?php endif; ?>
-  <div class="card form-stack">
-  <form method="post" enctype="multipart/form-data">
-    <?= \App\csrf_field() ?>
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      <label>Display name<br><input type="text" name="display_name" value="<?= e($row['display_name']) ?>" required></label>
-      <label>Username (public URL)<br><input type="text" value="@<?= e($row['username']) ?>" disabled class="bg-zinc-100 text-zinc-600"></label>
-    </div>
-    <label>Bio<br><textarea name="bio" rows="4"><?= e($row['bio']) ?></textarea></label>
-    <label>Custom footer (optional)<br><textarea name="custom_footer" rows="3" placeholder="Shown centered below your links on your public page"><?= e($row['custom_footer'] ?? '') ?></textarea></label>
-    <label>Theme<br>
-      <select name="theme">
-        <option value="light" <?= $row['theme']==='light'?'selected':'' ?>>Light</option>
-        <option value="dark"  <?= $row['theme']==='dark'?'selected':'' ?>>Dark</option>
-        <option value="custom"<?= $row['theme']==='custom'?'selected':'' ?>>Custom</option>
-      </select>
-    </label>
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-end">
-      <?php if (!empty($row['avatar_path'])): ?>
-        <img src="<?= e($row['avatar_path']) ?>" alt="Avatar" class="h-16 w-16 shrink-0 rounded-full object-cover ring-2 ring-zinc-100">
-      <?php endif; ?>
-      <label class="flex-1">Avatar (JPG/PNG, ≤200KB)
-        <input type="file" name="avatar" accept="image/jpeg,image/png">
-      </label>
-    </div>
-    <div class="pt-2">
-      <button type="submit" class="btn-primary">Save profile</button>
-    </div>
-  </form>
+  <div class="admin-content">
+    <?php if ($msg): ?><div class="alert"><?= e($msg) ?></div><?php endif; ?>
+
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+      <?= \App\csrf_field() ?>
+
+      <div class="card form-stack">
+        <h2 class="border-b border-zinc-100 pb-3 text-base font-semibold text-zinc-900">Profile details</h2>
+        <div class="grid grid-cols-1 gap-4 pt-1 sm:grid-cols-2">
+          <label>Display name<br><input type="text" name="display_name" value="<?= e($row['display_name']) ?>" required></label>
+          <label>Username (public URL)<br><input type="text" value="@<?= e($row['username']) ?>" disabled class="bg-zinc-100 text-zinc-600"></label>
+        </div>
+        <label>Bio<br><textarea name="bio" rows="4"><?= e($row['bio']) ?></textarea></label>
+        <label>Custom footer (optional)<br><textarea name="custom_footer" rows="3" placeholder="Shown centered below your links on your public page"><?= e($row['custom_footer'] ?? '') ?></textarea></label>
+        <label>Theme<br>
+          <select name="theme">
+            <option value="light" <?= $row['theme']==='light'?'selected':'' ?>>Light</option>
+            <option value="dark"  <?= $row['theme']==='dark'?'selected':'' ?>>Dark</option>
+            <option value="custom"<?= $row['theme']==='custom'?'selected':'' ?>>Custom</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="card form-stack">
+        <h2 class="border-b border-zinc-100 pb-3 text-base font-semibold text-zinc-900">Avatar</h2>
+        <div class="flex flex-col gap-4 pt-1 sm:flex-row sm:items-end">
+          <?php if (!empty($row['avatar_path'])): ?>
+            <img src="<?= e($row['avatar_path']) ?>" alt="Avatar" class="h-16 w-16 shrink-0 rounded-full object-cover ring-2 ring-zinc-200">
+          <?php endif; ?>
+          <label class="min-w-0 flex-1">Avatar (JPG/PNG, ≤200KB)
+            <input type="file" name="avatar" accept="image/jpeg,image/png">
+          </label>
+        </div>
+        <div class="flex justify-end border-t border-zinc-100 pt-4">
+          <button type="submit" class="btn-primary">Save profile</button>
+        </div>
+      </div>
+    </form>
+
+    <p class="text-sm text-zinc-600">Public page: <a href="/@<?= e($row['username']) ?>" target="_blank" rel="noopener" class="font-medium text-teal-700 hover:text-teal-800">/@<?= e($row['username']) ?></a></p>
   </div>
-  <p class="mt-6 text-sm text-zinc-600">Public page: <a href="/@<?= e($row['username']) ?>" target="_blank" rel="noopener" class="font-medium text-teal-700 hover:text-teal-800">/@<?= e($row['username']) ?></a></p>
 </main></body></html>
