@@ -144,35 +144,48 @@ ob_start();
 $headExtra = ob_get_clean();
 require __DIR__ . '/inc/partials/head.php';
 ?>
-  <main class="mx-auto max-w-md px-4 pb-8 pt-12 sm:px-5">
-    <header class="mb-10 text-center">
-      <h1 class="text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl"><?= e($appName) ?></h1>
-      <p class="mt-3 text-base text-zinc-600">All your links, one simple page — free &amp; open.</p>
-      <p class="mt-2 text-sm leading-relaxed text-zinc-500">Create a clean, customizable link hub in minutes. No paywalls. Own your data.</p>
-    </header>
-    <nav class="flex flex-col items-stretch gap-3 sm:items-center" aria-label="Sign up and log in">
-      <a href="/signup" class="btn-primary w-full sm:max-w-xs sm:w-auto" id="cta-signup">Create free account</a>
-      <a href="/login" class="btn-secondary w-full sm:max-w-xs sm:w-auto" id="cta-login">Log in</a>
-    </nav>
-    <section class="mt-12" aria-labelledby="benefits-heading">
-      <h2 id="benefits-heading" class="sr-only">Benefits</h2>
-      <div class="grid gap-4 sm:grid-cols-3">
-        <div class="card text-left">
-          <h3 class="mb-1 text-base font-semibold text-zinc-900">Free &amp; open</h3>
-          <p class="muted m-0">No subscriptions. Open ethos. No vendor lock‑in.</p>
+  <div class="mx-auto max-w-3xl px-4 pb-16 pt-10 sm:px-6 lg:px-8">
+    <main>
+      <section class="card mb-12 p-8 text-center shadow-sm ring-1 ring-zinc-200/70 sm:p-10" aria-labelledby="landing-hero-heading">
+        <h1 id="landing-hero-heading" class="text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl"><?= e($appName) ?></h1>
+        <p class="mt-4 text-base text-zinc-600">All your links, one simple page — free &amp; open.</p>
+        <p class="mt-2 text-sm leading-relaxed text-zinc-500">Create a clean, customizable link hub in minutes. No paywalls. Own your data.</p>
+        <nav class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4" aria-label="Sign up and log in">
+          <a href="/signup" class="btn-primary w-full sm:w-auto sm:min-w-[11rem]" id="cta-signup">Create free account</a>
+          <a href="/login" class="btn-secondary w-full sm:w-auto sm:min-w-[11rem]" id="cta-login">Log in</a>
+        </nav>
+      </section>
+
+      <section class="mb-12" aria-labelledby="benefits-heading">
+        <h2 id="benefits-heading" class="sr-only">Benefits</h2>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
+          <div class="card flex h-full flex-col p-6 text-left shadow-sm ring-1 ring-zinc-200/70">
+            <h3 class="mb-2 text-base font-semibold text-zinc-900">Free &amp; open</h3>
+            <p class="muted m-0 flex-1">No subscriptions. Open ethos. No vendor lock‑in.</p>
+          </div>
+          <div class="card flex h-full flex-col p-6 text-left shadow-sm ring-1 ring-zinc-200/70">
+            <h3 class="mb-2 text-base font-semibold text-zinc-900">Fast &amp; private</h3>
+            <p class="muted m-0 flex-1">Minimal tracking. Privacy‑respectful by default.</p>
+          </div>
+          <div class="card flex h-full flex-col p-6 text-left shadow-sm ring-1 ring-zinc-200/70">
+            <h3 class="mb-2 text-base font-semibold text-zinc-900">Customizable</h3>
+            <p class="muted m-0 flex-1">Your links, your branding, your control.</p>
+          </div>
         </div>
-        <div class="card text-left">
-          <h3 class="mb-1 text-base font-semibold text-zinc-900">Fast &amp; private</h3>
-          <p class="muted m-0">Minimal tracking. Privacy‑respectful by default.</p>
-        </div>
-        <div class="card text-left">
-          <h3 class="mb-1 text-base font-semibold text-zinc-900">Customizable</h3>
-          <p class="muted m-0">Your links, your branding, your control.</p>
-        </div>
-      </div>
-    </section>
-    <p class="muted mt-10 text-center">An open alternative to Linktree. Your page, your data.</p>
-  </main>
-<?php require __DIR__ . '/inc/partials/site_footer.php'; ?>
+      </section>
+
+      <p class="text-center text-sm leading-relaxed text-zinc-500">An open alternative to Linktree. Your page, your data.</p>
+    </main>
+
+    <footer class="mt-14 border-t border-zinc-200/50 pt-8">
+      <nav class="mb-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-zinc-500" aria-label="Footer">
+        <a href="/about" class="text-zinc-500 transition-colors hover:text-zinc-700">About</a>
+        <a href="/privacy" class="text-zinc-500 transition-colors hover:text-zinc-700">Privacy</a>
+        <a href="/terms" class="text-zinc-500 transition-colors hover:text-zinc-700">Terms</a>
+        <a href="/contact" class="text-zinc-500 transition-colors hover:text-zinc-700">Contact</a>
+      </nav>
+      <p class="text-xs text-zinc-400">© <?= $year ?> <a href="https://hillwork.us" class="text-zinc-500 transition-colors hover:text-zinc-600">Hillwork, LLC</a></p>
+    </footer>
+  </div>
 </body>
 </html>
