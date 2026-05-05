@@ -1,0 +1,22 @@
+{
+  "name": "LinkHill",
+  "short_name": "LinkHill",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#0d9488",
+  "icons": [
+    {
+      "src": "/icons/linkhill-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/linkhill-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
