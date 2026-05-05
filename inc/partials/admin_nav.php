@@ -1,6 +1,6 @@
 <?php
 /**
- * Admin page header + primary tab navigation.
+ * Admin page header: page title + section tabs (left) and account actions (right).
  * Requires: $me (user row), $nav_heading (page title), $nav_current
  * ('dashboard'|'profile'|'links'|'security'|'users').
  */
@@ -13,7 +13,7 @@ $isAdmin = (($me['role'] ?? '') === 'admin');
 ?>
 <header class="admin-page-header mb-10">
   <h1 class="mb-8 text-3xl font-semibold tracking-tight text-zinc-900"><?= e((string) $nav_heading) ?></h1>
-  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <div class="flex flex-col gap-0 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
     <nav class="inline-flex max-w-full flex-wrap gap-0.5 rounded-xl bg-zinc-100/90 p-1 ring-1 ring-zinc-200/70" aria-label="Admin sections">
       <?php if ($isAdmin): ?>
         <a href="/admin/" class="<?= $nav_current === 'dashboard' ? 'tab tab-active' : 'tab' ?>">Dashboard</a>
@@ -25,6 +25,8 @@ $isAdmin = (($me['role'] ?? '') === 'admin');
         <a href="/admin/users.php" class="<?= $nav_current === 'users' ? 'tab tab-active' : 'tab' ?>">Users</a>
       <?php endif; ?>
     </nav>
-    <a href="/admin/logout.php" class="admin-logout">Logout</a>
+    <div class="mt-3 flex w-full justify-end border-t border-zinc-200/80 pt-3 sm:mt-0 sm:w-auto sm:shrink-0 sm:border-t-0 sm:pt-0" role="group" aria-label="Account">
+      <a href="/admin/logout.php" class="admin-logout">Logout</a>
+    </div>
   </div>
 </header>

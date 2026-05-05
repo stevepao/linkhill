@@ -78,8 +78,9 @@
     @apply bg-white font-semibold text-teal-800 shadow-sm ring-1 ring-zinc-200/80 hover:bg-white hover:text-teal-900;
   }
 
+  /* Account action — not a tab; text-link style, subtle destructive */
   .admin-logout {
-    @apply inline-flex shrink-0 items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold text-red-700 no-underline transition-colors hover:bg-red-50 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500/40 focus:ring-offset-2;
+    @apply inline-flex items-center rounded-md px-2 py-1.5 text-sm font-medium text-red-700/90 no-underline transition-colors hover:bg-red-50 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500/35 focus:ring-offset-2;
   }
 
   /* Secondary tabs (e.g. Security → Password / Two-step / Passkeys) */
