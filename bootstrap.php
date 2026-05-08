@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App;
 
 use Dotenv\Dotenv;
+use Dotenv\Exception\InvalidFileException;
 
 function bootstrap(): void
 {
@@ -24,7 +25,12 @@ function bootstrap(): void
     }
 
     if (class_exists(Dotenv::class)) {
-        Dotenv::createImmutable(__DIR__)->safeLoad();
+        try {
+            Dotenv::createImmutable(__DIR__)->safeLoad();
+        } catch (InvalidFileException $e) {
+            // Avoid a hard fatal page; log parse errors for operator fix.
+            error_log('[LinkHill bootstrap] Invalid .env format: ' . $e->getMessage());
+        }
     }
 
     $booted = true;

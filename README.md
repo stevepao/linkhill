@@ -114,6 +114,7 @@ LinkHill loads configuration from `.env` (via `vlucas/phpdotenv`) through a sing
 - Create `.env` by copying `.env.example`.
 - `.env` is secret material and must not be committed.
 - `.env.example` is committed and contains the required keys with safe placeholders.
+- Quote `.env` values that contain spaces, commas, or `#` (example: `SMTP_FROM_NAME="Hillwork, LLC"`).
 
 Important environment keys:
 
