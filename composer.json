@@ -8,7 +8,8 @@
         "guzzlehttp/guzzle": "^7"
     },
     "autoload": {
-        "classmap": ["inc/"]
+        "classmap": ["inc/"],
+        "files": ["inc/secrets_loader.php"]
     },
     "config": {
         "optimize-autoloader": true

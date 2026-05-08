@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace App;
 
-use function App\Secrets\load as secrets_load;
-
 function bootstrap(): void
 {
     static $booted = false;
@@ -23,7 +21,9 @@ function bootstrap(): void
         require_once $autoload;
     }
 
-    secrets_load(__DIR__);
+    // Classmap autoload skips files that only define functions; always load explicitly.
+    require_once __DIR__ . '/inc/secrets_loader.php';
+    \App\Secrets\load(__DIR__);
 
     $booted = true;
 }
