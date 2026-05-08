@@ -13,6 +13,14 @@ RewriteRule ^config/ - [F,L]
 RewriteRule ^storage/ - [F,L]
 # Security: deny direct access to dotfiles (e.g. .env, .git, .user.ini)
 RewriteRule "(^|/)\." - [F,L]
+# Security: block common dependency manifests/locks
+RewriteRule ^composer\.(json|lock)$ - [F,L,NC]
+RewriteRule ^package(-lock)?\.json$ - [F,L,NC]
+RewriteRule ^yarn\.lock$ - [F,L,NC]
+RewriteRule ^pnpm-lock\.yaml$ - [F,L,NC]
+# Security: block backup/temp artifacts that may expose source/secrets
+RewriteRule \.(bak|old|orig|save|swp|tmp)$ - [F,L,NC]
+RewriteRule ~$ - [F,L]
 
 # Security headers (may require mod_headers on host)
 <IfModule mod_headers.c>
