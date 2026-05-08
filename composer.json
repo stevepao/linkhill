@@ -5,10 +5,13 @@
         "php": ">=8.1",
         "lbuchs/webauthn": "^2.0",
         "phpmailer/phpmailer": "^6.9",
-        "vlucas/phpdotenv": "^5.6"
+        "guzzlehttp/guzzle": "^7"
     },
     "autoload": {
-        "classmap": ["inc/"]
+        "classmap": ["inc/"],
+        "psr-4": {
+            "App\\Config\\": "src/Config/"
+        }
     },
     "config": {
         "optimize-autoloader": true

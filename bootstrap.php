@@ -9,8 +9,7 @@ declare(strict_types=1);
 
 namespace App;
 
-use Dotenv\Dotenv;
-use Dotenv\Exception\InvalidFileException;
+use App\Config\SecretsLoader;
 
 function bootstrap(): void
 {
@@ -24,14 +23,7 @@ function bootstrap(): void
         require_once $autoload;
     }
 
-    if (class_exists(Dotenv::class)) {
-        try {
-            Dotenv::createImmutable(__DIR__)->safeLoad();
-        } catch (InvalidFileException $e) {
-            // Avoid a hard fatal page; log parse errors for operator fix.
-            error_log('[LinkHill bootstrap] Invalid .env format: ' . $e->getMessage());
-        }
-    }
+    SecretsLoader::load(__DIR__);
 
     $booted = true;
 }

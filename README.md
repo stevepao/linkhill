@@ -73,10 +73,10 @@ This is for a **fresh install** with no existing users. You only need the schema
 
 1. **Create a MySQL database** and user (host, dbname, user, pass) in your hosting control panel.
 
-2. **Create environment config**
-   - Copy `.env.example` to `.env`.
-   - Edit `.env`: set **DB_HOST**, **DB_NAME**, **DB_USER**, **DB_PASS**.
-   - Keep `COOKIE_SECURE=true` on HTTPS. Optionally set SMTP and WebAuthn values (see [Configuration](#configuration)).
+2. **1Password Connect secrets**
+   - Place your Connect access token in **`../op_config/OP_CONNECT_TOKEN`** (one directory above the project root; path is resolved with `realpath` at runtime).
+   - Ensure your Connect server is reachable at **`https://1password-bridge.hillwork.org`** from the web host.
+   - In vault **`expbsxowmtwqr6c6tbm36eoxlq`**, maintain an item titled **`linkhill_env`**. Each **custom field label** must match the PHP environment variable name (for example `DB_HOST`, `SMTP_PASS`, `WEBAUTHN_ORIGIN`). Values are injected into `$_ENV` / `putenv()` on each request (see [Configuration](#configuration)).
 
 3. **Import the schema**
    - In phpMyAdmin or your DB manager, import **`sql/schema.sql`** into your database.
@@ -109,14 +109,11 @@ This is for a **fresh install** with no existing users. You only need the schema
 
 ## Configuration
 
-LinkHill loads configuration from `.env` (via `vlucas/phpdotenv`) through a single app bootstrap.
+Secrets are loaded **once per request** from **1Password Connect** (`bootstrap.php` → `App\Config\SecretsLoader`), using **Guzzle** against the Connect REST API.
 
-- Create `.env` by copying `.env.example`.
-- `.env` is secret material and must not be committed.
-- `.env.example` is committed and contains the required keys with safe placeholders.
-- Quote `.env` values that contain spaces, commas, or `#` (example: `SMTP_FROM_NAME="Hillwork, LLC"`).
+The Packagist package **`dragonbe/connect-sdk-php`** referenced a GitHub repository that is **no longer publicly available**, so this project talks to Connect directly (same API your bridge exposes).
 
-Important environment keys:
+Important environment keys (store each as a **field label** on the `linkhill_env` item; values may contain spaces—no quoting layer like `.env`):
 
 - `APP_NAME`, `APP_BASE_URL`
 - `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS`, `DB_CHARSET`
@@ -133,7 +130,7 @@ Important environment keys:
 ## Deploying on 1&1 / IONOS
 
 - Set **PHP 8.1+** for the domain in the control panel.
-- Create a MySQL database and user; put credentials in `.env`.
+- Create a MySQL database and user; store DB credentials as fields on the **`linkhill_env`** Connect item (see above).
 - Point the domain’s **document root** to the folder that contains `index.php` and `.htaccess`.
 - Make **storage/sessions**, **storage/rate_limit**, and **storage** writable (File Manager or SFTP).
 - To use passkeys and SMTP without SSH: run `composer install` locally, then upload the project **including `vendor/`**.
