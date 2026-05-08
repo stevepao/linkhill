@@ -73,10 +73,10 @@ This is for a **fresh install** with no existing users. You only need the schema
 
 1. **Create a MySQL database** and user (host, dbname, user, pass) in your hosting control panel.
 
-2. **Copy config**
-   - Copy `config/config.example` to `config/config.php`.
-   - Edit `config/config.php`: set **db** (host, dbname, user, pass).
-   - Keep `cookie_secure => true` on HTTPS. Optionally set **smtp** and **webauthn** (see [Configuration](#configuration)).
+2. **Create environment config**
+   - Copy `.env.example` to `.env`.
+   - Edit `.env`: set **DB_HOST**, **DB_NAME**, **DB_USER**, **DB_PASS**.
+   - Keep `COOKIE_SECURE=true` on HTTPS. Optionally set SMTP and WebAuthn values (see [Configuration](#configuration)).
 
 3. **Import the schema**
    - In phpMyAdmin or your DB manager, import **`sql/schema.sql`** into your database.
@@ -109,27 +109,30 @@ This is for a **fresh install** with no existing users. You only need the schema
 
 ## Configuration
 
-In `config/config.php` (copy from `config/config.example`):
+LinkHill loads configuration from `.env` (via `vlucas/phpdotenv`) through a single app bootstrap.
 
-| Key | Purpose |
-|-----|--------|
-| **app_name** | Name shown on the homepage and in emails |
-| **base_url** | Leave empty to auto-detect, or set e.g. `https://links.example.com` |
-| **db** | host, dbname, user, pass, charset |
-| **session_name**, **cookie_secure**, **cookie_samesite**, **password_cost**, **timezone** | Session and app behavior |
-| **dev_mode** | If `true`, password reset links are written to the PHP error log when SMTP isn’t configured |
-| **smtp** | host, port, secure (tls/ssl), user, pass, from, from_name. Required for sending password reset emails |
-| **webauthn** | **rp_id** (e.g. `example.com`), **rp_name**, **origin** (e.g. `https://example.com`). Required for passkeys |
+- Create `.env` by copying `.env.example`.
+- `.env` is secret material and must not be committed.
+- `.env.example` is committed and contains the required keys with safe placeholders.
 
-- **Passkeys:** Need HTTPS. Set **webauthn** `origin` and `rp_id` to your domain.
-- **Base URL:** Set **base_url** if the app lives in a subdirectory or you need a fixed URL for emails and sitemaps.
+Important environment keys:
+
+- `APP_NAME`, `APP_BASE_URL`
+- `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS`, `DB_CHARSET`
+- `SESSION_NAME`, `COOKIE_SECURE`, `COOKIE_SAMESITE`, `PASSWORD_COST`, `APP_TIMEZONE`
+- `DEV_MODE`, `MIGRATION_KEY`
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, `SMTP_FROM_NAME`
+- `WEBAUTHN_RP_ID`, `WEBAUTHN_RP_NAME`, `WEBAUTHN_ORIGIN`
+
+- **Passkeys:** Need HTTPS. Set `WEBAUTHN_ORIGIN` and `WEBAUTHN_RP_ID` to your domain.
+- **Base URL:** Set `APP_BASE_URL` if the app lives in a subdirectory or you need a fixed URL for emails and sitemaps.
 
 ---
 
 ## Deploying on 1&1 / IONOS
 
 - Set **PHP 8.1+** for the domain in the control panel.
-- Create a MySQL database and user; put credentials in `config/config.php`.
+- Create a MySQL database and user; put credentials in `.env`.
 - Point the domain’s **document root** to the folder that contains `index.php` and `.htaccess`.
 - Make **storage/sessions**, **storage/rate_limit**, and **storage** writable (File Manager or SFTP).
 - To use passkeys and SMTP without SSH: run `composer install` locally, then upload the project **including `vendor/`**.

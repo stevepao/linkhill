@@ -8,9 +8,12 @@
 declare(strict_types=1);
 namespace App;
 
+require_once __DIR__ . '/../bootstrap.php';
+
 function config(): array {
     static $cfg = null;
     if ($cfg === null) {
+        bootstrap();
         $cfg = require __DIR__ . '/../config/config.php';
         date_default_timezone_set($cfg['timezone'] ?? 'UTC');
     }
