@@ -1,5 +1,6 @@
 # Enable rewriting
 RewriteEngine On
+Options -MultiViews
 # If the app lives in a subdirectory (e.g. /link/), set this to that path with no trailing slash, e.g. RewriteBase /link
 RewriteBase /
 
@@ -10,6 +11,8 @@ RewriteRule ^favicon\.ico$ icons/favicon.ico [L]
 RewriteRule ^inc/ - [F,L]
 RewriteRule ^config/ - [F,L]
 RewriteRule ^storage/ - [F,L]
+# Security: deny direct access to dotfiles (e.g. .env, .git, .user.ini)
+RewriteRule "(^|/)\." - [F,L]
 
 # Security headers (may require mod_headers on host)
 <IfModule mod_headers.c>
