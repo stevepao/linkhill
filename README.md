@@ -109,7 +109,7 @@ This is for a **fresh install** with no existing users. You only need the schema
 
 ## Configuration
 
-Secrets are loaded **once per request** from **1Password Connect** (`bootstrap.php` → `App\Config\SecretsLoader`), using **Guzzle** against the Connect REST API.
+Secrets are loaded **once per request** from **1Password Connect** (`bootstrap.php` → `inc/secrets_loader.php`), using **Guzzle** against the Connect REST API.
 
 The Packagist package **`dragonbe/connect-sdk-php`** referenced a GitHub repository that is **no longer publicly available**, so this project talks to Connect directly (same API your bridge exposes).
 

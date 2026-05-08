@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App;
 
-use App\Config\SecretsLoader;
+use function App\Secrets\load as secrets_load;
 
 function bootstrap(): void
 {
@@ -23,7 +23,7 @@ function bootstrap(): void
         require_once $autoload;
     }
 
-    SecretsLoader::load(__DIR__);
+    secrets_load(__DIR__);
 
     $booted = true;
 }
