@@ -26,7 +26,7 @@ Visitors click a link on your page and are redirected through your site (optiona
 - **Multi-user** with roles: **admin**, **user**
 - **Auth:** password + optional TOTP (authenticator app) and **passkeys** (WebAuthn)
 - **Security** page: change password, enable/disable TOTP, register/rename/remove passkeys
-- **Password reset** via email (SMTP) or, in dev mode, via link in the error log
+- **Password reset** via email (SMTP), or with **`DEV_MODE`** enabled (in your Connect item) via link in the error log when SMTP is not configured
 - **Public pages** at **`/@username`** (e.g. `/@jane`)
 - **Links:** title, URL, optional description (card blurb), color, icon, drag-to-reorder
 - **Section headings** on your link page (e.g. “Social links”, “My shop”)
@@ -45,6 +45,7 @@ Visitors click a link on your page and are redirected through your site (optiona
 - **MySQL** (create database and user in your control panel)
 - **Writable directories:** `storage/sessions`, `storage/rate_limit`, `storage/` (for generated `sites.xml`)
 - **HTTPS** recommended (required for passkeys in production)
+- **1Password Connect** reachable from the server: configure your bridge URL and vault/item in **`../op_config/linkhill_connect.json`**, with a token file in **`../op_config/`**. Keep that directory **outside the web root** and restrict permissions on the token file (see step 2 under **Installation** below).
 - **Node.js 18+** (only on your dev machine) if you change HTML/PHP classes and need to rebuild the Tailwind bundle
 
 ---
@@ -73,29 +74,28 @@ This is for a **fresh install** with no existing users. You only need the schema
 
 1. **Create a MySQL database** and user (host, dbname, user, pass) in your hosting control panel.
 
-2. **1Password Connect secrets**
-   - Create **`../op_config/linkhill_connect.json`** next to your token file (one directory above the project root) with Connect wiring, for example:
+2. **1Password Connect secrets** (paths are relative to the **project root**—the folder that contains `bootstrap.php` and `index.php`; `../op_config` is **one level above** that folder and should not be web-accessible.)
+   - Create **`../op_config/linkhill_connect.json`** beside your token file with Connect wiring, for example:
      ```json
      {
-       "connect_base_url": "https://1password-bridge.hillwork.org",
+       "connect_base_url": "https://your-connect-bridge.example.com",
        "vault_id": "YOUR_VAULT_UUID",
        "item_title": "linkhill_env",
        "token_filename": "OP_CONNECT_TOKEN",
        "http_timeout_seconds": 25
      }
      ```
-     Only **`connect_base_url`**, **`vault_id`**, and **`item_title`** are required. **`token_filename`** defaults to `OP_CONNECT_TOKEN`; **`http_timeout_seconds`** defaults to `25` (must be between 1 and 120).
-   - Put your Connect access token in **`../op_config/`** using the configured filename (default **`OP_CONNECT_TOKEN`**). Paths are resolved with `realpath` at runtime.
-   - In the configured vault, keep an item whose **title** matches **`item_title`**. Each **custom field label** must match the PHP environment variable name (for example `DB_HOST`, `SMTP_PASS`, `WEBAUTHN_ORIGIN`). Values are injected into `$_ENV` / `putenv()` on each request (see [Configuration](#configuration)).
+     Required keys: **`connect_base_url`**, **`vault_id`**, **`item_title`**. Optional: **`token_filename`** (default `OP_CONNECT_TOKEN`), **`http_timeout_seconds`** (default `25`, allowed range 1–120).
+   - Put your Connect access token in **`../op_config/`** using the configured filename (default **`OP_CONNECT_TOKEN`**). The app resolves paths with `realpath` at runtime.
+   - In the vault given by **`vault_id`**, keep an item whose **title** equals **`item_title`**. Each **custom field label** must match the environment variable name the app expects (for example `DB_HOST`, `SMTP_PASS`, `WEBAUTHN_ORIGIN`). Values are injected into `$_ENV` and `putenv()` before `config()` runs (see [Configuration](#configuration)).
 
 3. **Import the schema**
    - In phpMyAdmin or your DB manager, import **`sql/schema.sql`** into your database.
    - This creates all tables (users, links, link_clicks, password_resets, webauthn_credentials, email_verifications). No other SQL scripts are needed for a new install.
 
-4. **Composer (for passkeys and email)**
+4. **Composer**
    - On your machine (with PHP and Composer), run: `composer install`
-   - Upload the **entire project** to the server (e.g. via SFTP), **including the `vendor/` folder**.
-   - If you don’t upload `vendor/`, the app still runs (password + TOTP, links, profiles); passkeys and SMTP-based password reset will report that Composer dependencies are required.
+   - Upload the **entire project** to the server (e.g. via SFTP), **including the `vendor/` folder**. LinkHill needs Composer packages for **1Password Connect loading (Guzzle)**, **passkeys**, and **SMTP**—without `vendor/autoload.php`, requests will fail when bootstrap runs.
 
 5. **Upload the app**
    - Upload all files to your web root (or the folder that will be the document root for your domain).
@@ -119,11 +119,18 @@ This is for a **fresh install** with no existing users. You only need the schema
 
 ## Configuration
 
-Secrets are loaded **once per request** from **1Password Connect** (`bootstrap.php` → `inc/secrets_loader.php`), using **Guzzle** against the Connect REST API.
+Runtime configuration is built from **environment variables** that **`inc/secrets_loader.php`** fills **once per request**: it reads **`../op_config/linkhill_connect.json`**, loads your Connect token from **`../op_config/`**, then calls the [Connect REST API](https://developer.1password.com/docs/connect/api-reference/) (via **Guzzle**) and maps each **field label** on the configured item to `$_ENV` / `putenv()`. **`config/config.php`** reads those variables into the array returned by `config()`—there is no `.env` file.
 
-The Packagist package **`dragonbe/connect-sdk-php`** referenced a GitHub repository that is **no longer publicly available**, so this project talks to Connect directly (same API your bridge exposes).
+### Why 1Password Connect?
 
-Important environment keys (store each as a **field label** on the `linkhill_env` item; values may contain spaces—no quoting layer like `.env`):
+The app uses a **1Password Connect** server so that **application secrets** (database, SMTP, WebAuthn settings, and similar) are **not stored in the repository**, a committed config file, or a `.env` on the server. They live in **1Password** and are served to PHP only at runtime, which supports:
+
+- **Smaller attack surface on disk** — No long-lived copy of database passwords or API secrets beside the app tree; nothing sensitive needs to be edited in SFTP or echoed into hosting panels for routine deploys. *(You still place one **Connect access token** in `../op_config/` so PHP can authenticate to Connect—that single token should be tightly permissioned; rotate it in 1Password if it may be exposed.)*
+- **Easier auditing** — Access and use of secrets can be tied to **1Password** and **Connect** logging and policies rather than grepping server files.
+- **Smoother credential rotation** — Update passwords or keys **in 1Password**; the next request picks up new values without redeploying a flat config or rebuilding `.env` files for every secret change.
+- **Centralized policy** — Who may view or edit secrets follows your **1Password** vault permissions and workflows instead of ad hoc file permissions across hosts.
+
+Field labels on the item whose title matches **`item_title`** in JSON should mirror these keys (values may contain spaces; unlike `.env`, no quoting rules):
 
 - `APP_NAME`, `APP_BASE_URL`
 - `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS`, `DB_CHARSET`
@@ -140,7 +147,7 @@ Important environment keys (store each as a **field label** on the `linkhill_env
 ## Deploying on 1&1 / IONOS
 
 - Set **PHP 8.1+** for the domain in the control panel.
-- Create a MySQL database and user; store DB credentials as fields on the **`linkhill_env`** Connect item (see above).
+- Create a MySQL database and user; store DB credentials as fields on the Connect item whose title matches **`item_title`** in **`linkhill_connect.json`** (same as step 2 under **Installation**).
 - Point the domain’s **document root** to the folder that contains `index.php` and `.htaccess`.
 - Make **storage/sessions**, **storage/rate_limit**, and **storage** writable (File Manager or SFTP).
 - To use passkeys and SMTP without SSH: run `composer install` locally, then upload the project **including `vendor/`**.
@@ -155,6 +162,13 @@ Important environment keys (store each as a **field label** on the `linkhill_env
 - Ensure **storage/sessions** exists and is writable.
 - Enable `display_errors` or check the PHP error log; set **session.save_path** in `.user.ini` if the default path isn’t writable.
 
+### 500 right after deploy / “Connect” or “op_config” errors
+
+- Confirm **`../op_config/linkhill_connect.json`** exists next to your token file and contains valid JSON with **`connect_base_url`**, **`vault_id`**, and **`item_title`**.
+- Confirm the token file exists (default **`../op_config/OP_CONNECT_TOKEN`**) and is readable by PHP.
+- From the server, the URL in **`connect_base_url`** must be reachable (TLS, firewall, DNS).
+- Confirm **`vendor/`** was uploaded (`composer install` includes Guzzle used by `secrets_loader.php`).
+
 ### `/@username` returns 404 or wrong page
 
 - Try **`index.php?u=username`** (works without rewrites).
@@ -164,7 +178,7 @@ Important environment keys (store each as a **field label** on the `linkhill_env
 ### “Call to undefined function” / “Class not found”
 
 - Confirm **PHP 8.1+** in the control panel.
-- If using passkeys or email, ensure **vendor/** was uploaded after `composer install`.
+- Ensure **`vendor/`** was uploaded after **`composer install`** (required for Connect bootstrap, passkeys, and SMTP).
 
 ### Sitemap not updating
 
