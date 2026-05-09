@@ -14,14 +14,12 @@ use GuzzleHttp\Exception\GuzzleException;
 use JsonException;
 use RuntimeException;
 
-const CONNECT_BASE_URL = 'https://1password-bridge.hillwork.org';
-
-const VAULT_ID = 'expbsxowmtwqr6c6tbm36eoxlq';
-
-const ITEM_TITLE = 'linkhill_env';
-
 /** Relative to project root (bootstrap directory). */
-const TOKEN_RELATIVE_PATH = '/../op_config/OP_CONNECT_TOKEN';
+const OP_CONFIG_RELATIVE = '/../op_config';
+
+const CONNECT_CONFIG_FILENAME = 'linkhill_connect.json';
+
+const DEFAULT_TOKEN_FILENAME = 'OP_CONNECT_TOKEN';
 
 /**
  * Load secrets from Connect into $_ENV and putenv(), matching typical Dotenv usage.
@@ -30,36 +28,39 @@ const TOKEN_RELATIVE_PATH = '/../op_config/OP_CONNECT_TOKEN';
  */
 function load(string $project_root): void
 {
-    $token_path = realpath($project_root . TOKEN_RELATIVE_PATH);
-    if ($token_path === false || !is_readable($token_path)) {
+    $wire = read_connect_wire($project_root);
+
+    $token_path = $wire['op_config_dir'] . DIRECTORY_SEPARATOR . $wire['token_filename'];
+    if (!is_readable($token_path)) {
         throw new RuntimeException(
-            '[LinkHill] OP_CONNECT_TOKEN not found or unreadable. Expected file at '
-            . $project_root . TOKEN_RELATIVE_PATH
+            '[LinkHill] Connect token file not found or unreadable: ' . $token_path
         );
     }
 
     $raw = file_get_contents($token_path);
     if ($raw === false) {
-        throw new RuntimeException('[LinkHill] Failed to read OP_CONNECT_TOKEN file.');
+        throw new RuntimeException('[LinkHill] Failed to read Connect token file.');
     }
 
     $token = trim($raw);
     if ($token === '') {
-        throw new RuntimeException('[LinkHill] OP_CONNECT_TOKEN file is empty.');
+        throw new RuntimeException('[LinkHill] Connect token file is empty.');
     }
 
     $client = new Client([
-        'base_uri' => rtrim(CONNECT_BASE_URL, '/') . '/',
+        'base_uri' => rtrim($wire['connect_base_url'], '/') . '/',
         'headers' => [
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json',
         ],
-        'timeout' => 25,
+        'timeout' => $wire['http_timeout_seconds'],
     ]);
 
     try {
-        $item_id = resolve_item_uuid($client, VAULT_ID, ITEM_TITLE);
-        $uri = 'v1/vaults/' . rawurlencode(VAULT_ID) . '/items/' . rawurlencode($item_id);
+        $vault_id = $wire['vault_id'];
+        $item_title = $wire['item_title'];
+        $item_id = resolve_item_uuid($client, $vault_id, $item_title);
+        $uri = 'v1/vaults/' . rawurlencode($vault_id) . '/items/' . rawurlencode($item_id);
         $response = $client->get($uri);
         /** @var array<string, mixed> $item */
         $item = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
@@ -72,6 +73,86 @@ function load(string $project_root): void
     foreach (fields_to_env_map($item) as $name => $value) {
         inject_env($name, $value);
     }
+}
+
+/**
+ * Read ../op_config/linkhill_connect.json and return validated wiring + resolved op_config directory.
+ *
+ * @param non-empty-string $project_root
+ *
+ * @return array{
+ *     op_config_dir: non-empty-string,
+ *     connect_base_url: non-empty-string,
+ *     vault_id: non-empty-string,
+ *     item_title: non-empty-string,
+ *     token_filename: non-empty-string,
+ *     http_timeout_seconds: float
+ * }
+ */
+function read_connect_wire(string $project_root): array
+{
+    $op_dir = realpath($project_root . OP_CONFIG_RELATIVE);
+    if ($op_dir === false || !is_dir($op_dir)) {
+        throw new RuntimeException(
+            '[LinkHill] op_config directory not found. Expected at ' . $project_root . OP_CONFIG_RELATIVE
+        );
+    }
+
+    $config_path = $op_dir . DIRECTORY_SEPARATOR . CONNECT_CONFIG_FILENAME;
+    if (!is_readable($config_path)) {
+        throw new RuntimeException(
+            '[LinkHill] Connect config missing or unreadable: ' . $config_path
+        );
+    }
+
+    $json_raw = file_get_contents($config_path);
+    if ($json_raw === false) {
+        throw new RuntimeException('[LinkHill] Failed to read Connect config file.');
+    }
+
+    try {
+        /** @var mixed $decoded */
+        $decoded = json_decode($json_raw, true, 512, JSON_THROW_ON_ERROR);
+    } catch (JsonException $e) {
+        throw new RuntimeException('[LinkHill] Invalid JSON in ' . CONNECT_CONFIG_FILENAME . ': ' . $e->getMessage(), 0, $e);
+    }
+
+    if (!is_array($decoded)) {
+        throw new RuntimeException('[LinkHill] Connect config must be a JSON object.');
+    }
+
+    $base_url = trim((string) ($decoded['connect_base_url'] ?? ''));
+    $vault_id = trim((string) ($decoded['vault_id'] ?? ''));
+    $item_title = trim((string) ($decoded['item_title'] ?? ''));
+
+    if ($base_url === '' || $vault_id === '' || $item_title === '') {
+        throw new RuntimeException(
+            '[LinkHill] Connect config requires non-empty connect_base_url, vault_id, and item_title.'
+        );
+    }
+
+    $token_name = trim((string) ($decoded['token_filename'] ?? DEFAULT_TOKEN_FILENAME));
+    if ($token_name === '') {
+        $token_name = DEFAULT_TOKEN_FILENAME;
+    }
+    if (!preg_match('/^[A-Za-z0-9._-]+$/', $token_name)) {
+        throw new RuntimeException('[LinkHill] token_filename must contain only safe filename characters.');
+    }
+
+    $timeout_raw = $decoded['http_timeout_seconds'] ?? 25;
+    $timeout = is_numeric($timeout_raw) ? (float) $timeout_raw : 25.0;
+    if ($timeout < 1.0 || $timeout > 120.0) {
+        throw new RuntimeException('[LinkHill] http_timeout_seconds must be between 1 and 120.');
+    }
+
+    return [
+        'op_config_dir' => $op_dir,
+        'connect_base_url' => $base_url,
+        'vault_id' => $vault_id,
+        'item_title' => $item_title,
+        'token_filename' => $token_name,
+        'http_timeout_seconds' => $timeout,
+    ];
 }
 
 /**

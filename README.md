@@ -74,9 +74,19 @@ This is for a **fresh install** with no existing users. You only need the schema
 1. **Create a MySQL database** and user (host, dbname, user, pass) in your hosting control panel.
 
 2. **1Password Connect secrets**
-   - Place your Connect access token in **`../op_config/OP_CONNECT_TOKEN`** (one directory above the project root; path is resolved with `realpath` at runtime).
-   - Ensure your Connect server is reachable at **`https://1password-bridge.hillwork.org`** from the web host.
-   - In vault **`expbsxowmtwqr6c6tbm36eoxlq`**, maintain an item titled **`linkhill_env`**. Each **custom field label** must match the PHP environment variable name (for example `DB_HOST`, `SMTP_PASS`, `WEBAUTHN_ORIGIN`). Values are injected into `$_ENV` / `putenv()` on each request (see [Configuration](#configuration)).
+   - Create **`../op_config/linkhill_connect.json`** next to your token file (one directory above the project root) with Connect wiring, for example:
+     ```json
+     {
+       "connect_base_url": "https://1password-bridge.hillwork.org",
+       "vault_id": "YOUR_VAULT_UUID",
+       "item_title": "linkhill_env",
+       "token_filename": "OP_CONNECT_TOKEN",
+       "http_timeout_seconds": 25
+     }
+     ```
+     Only **`connect_base_url`**, **`vault_id`**, and **`item_title`** are required. **`token_filename`** defaults to `OP_CONNECT_TOKEN`; **`http_timeout_seconds`** defaults to `25` (must be between 1 and 120).
+   - Put your Connect access token in **`../op_config/`** using the configured filename (default **`OP_CONNECT_TOKEN`**). Paths are resolved with `realpath` at runtime.
+   - In the configured vault, keep an item whose **title** matches **`item_title`**. Each **custom field label** must match the PHP environment variable name (for example `DB_HOST`, `SMTP_PASS`, `WEBAUTHN_ORIGIN`). Values are injected into `$_ENV` / `putenv()` on each request (see [Configuration](#configuration)).
 
 3. **Import the schema**
    - In phpMyAdmin or your DB manager, import **`sql/schema.sql`** into your database.
