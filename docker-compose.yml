@@ -6,6 +6,7 @@ services:
     volumes:
       - .:/var/www/html
       - ../op_config:/var/www/op_config:ro
+      - ./docker-data/avatars:/var/www/html/assets/img/avatars
     depends_on:
       db:
         condition: service_healthy
