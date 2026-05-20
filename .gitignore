@@ -1,5 +1,25 @@
 .env
+.env.*
+!.env.example
 .DS_Store
+
+# Dependencies installed locally or inside containers
 /node_modules/
 /vendor/
+
+# App-generated runtime artifacts
 storage/sites.xml
+storage/cache/
+storage/sessions/*
+storage/rate_limit/*
+!storage/sessions/.gitkeep
+!storage/rate_limit/.gitkeep
+
+# Docker/local runtime state (keep Dockerfile and docker-compose.yml tracked)
+.docker/
+docker-data/
+mysql_data/
+/op_config/
+*.pid
+*.sock
+*.log

@@ -1,0 +1,44 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/var/www/html
+      - ../op_config:/var/www/op_config:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - default
+      - proxy-tier
+
+  db:
+    image: mysql:8.0
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-linkhill}
+      MYSQL_USER: ${MYSQL_USER:-linkhill}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-linkhill_dev_password}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-linkhill_root_password}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - default
+
+volumes:
+  mysql_data:
+
+networks:
+  default:
+    internal: true
+  proxy-tier:
+    external: true
