@@ -7,6 +7,10 @@ services:
       - .:/var/www/html
       - ../op_config:/var/www/op_config:ro
       - ./docker-data/avatars:/var/www/html/assets/img/avatars
+    command: >
+      bash -lc "mkdir -p /var/www/html/assets/img/avatars
+      && chown -R www-data:www-data /var/www/html/assets/img/avatars
+      && apache2-foreground"
     depends_on:
       db:
         condition: service_healthy
