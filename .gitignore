@@ -18,6 +18,7 @@ storage/rate_limit/*
 # Docker/local runtime state (keep Dockerfile and docker-compose.yml tracked)
 .docker/
 docker-data/
+/backups/
 mysql_data/
 /op_config/
 *.pid
